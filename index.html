@@ -144,9 +144,9 @@
                 radial-gradient(circle at 80% 10%, rgba(56, 189, 248, 0.18), transparent 55%),
                 radial-gradient(circle at 10% 80%, rgba(94, 234, 212, 0.14), transparent 55%),
                 linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
-            filter: blur(0);
             z-index: -2;
             animation: bg-shift 22s ease-in-out infinite alternate;
+            will-change: transform;
         }
 
         /* Лёгкий слой "частиц" без JS (плавные шумовые пятна) */
@@ -157,7 +157,6 @@
             background:
                 radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08), transparent 65%),
                 radial-gradient(circle at 70% 80%, rgba(15, 23, 42, 0.15), transparent 60%);
-            mix-blend-mode: screen;
             opacity: 0.65;
             z-index: -1;
             pointer-events: none;
@@ -167,15 +166,12 @@
         @keyframes bg-shift {
             0% {
                 transform: translate3d(0, 0, 0) scale(1.02);
-                filter: saturate(1);
             }
             50% {
-                transform: translate3d(0, -12px, 0) scale(1.04);
-                filter: saturate(1.15);
+                transform: translate3d(0, -10px, 0) scale(1.03);
             }
             100% {
-                transform: translate3d(0, 10px, 0) scale(1.02);
-                filter: saturate(1);
+                transform: translate3d(0, 8px, 0) scale(1.02);
             }
         }
 
@@ -207,9 +203,7 @@
                 0 22px 60px rgba(15, 23, 42, 0.75),
                 0 0 0 1px rgba(255, 255, 255, 0.03);
             /* Убираем размытие фона ради читаемости текста */
-            transform-style: preserve-3d;
             transition: transform 260ms cubic-bezier(0.21, 0.82, 0.35, 1), box-shadow 260ms ease-out;
-            will-change: transform;
         }
 
         /* Дополнительные декоративные круги внутри карточки */
@@ -285,7 +279,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            filter: drop-shadow(0 0 10px rgba(244, 244, 245, 0.5));
+            filter: drop-shadow(0 0 14px rgba(96, 165, 250, 0.55));
+            will-change: transform;
             animation:
                 brain-pulse 2.9s ease-in-out infinite,
                 emoji-fade 900ms ease-out 60ms both;
@@ -306,19 +301,15 @@
             0%,
             100% {
                 transform: scale(1);
-                filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5));
             }
             25% {
-                transform: scale(1.08);
-                filter: drop-shadow(0 0 16px rgba(94, 234, 212, 0.8));
+                transform: scale(1.07);
             }
             50% {
                 transform: scale(1.03);
-                filter: drop-shadow(0 0 10px rgba(244, 114, 182, 0.7));
             }
             75% {
                 transform: scale(1.06);
-                filter: drop-shadow(0 0 14px rgba(129, 140, 248, 0.8));
             }
         }
 
@@ -384,7 +375,8 @@
                 border-color var(--transition-fast),
                 transform var(--transition-fast),
                 box-shadow var(--transition-fast),
-                color var(--transition-fast);
+                color var(--transition-fast),
+                opacity var(--transition-fast);
         }
 
         body[data-theme='light'] .theme-toggle-button {
@@ -492,9 +484,8 @@
             box-shadow: var(--button-shadow);
             overflow: hidden;
             transition:
-                transform 150ms ease-out,
-                box-shadow 160ms ease-out,
-                border-color 150ms ease-out,
+                transform 180ms ease-out,
+                border-color 180ms ease-out,
                 background 200ms ease-out,
                 color 160ms ease-out;
         }
@@ -517,6 +508,28 @@
                 opacity 260ms ease-out,
                 transform 360ms ease-out;
             pointer-events: none;
+        }
+
+        .device-link::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .device-link.apple::after {
+            box-shadow: 0 0 28px 4px rgba(0, 122, 255, 0.45);
+        }
+
+        .device-link.android::after {
+            box-shadow: 0 0 28px 4px rgba(61, 220, 132, 0.45);
+        }
+
+        .device-link.desktop::after {
+            box-shadow: 0 0 28px 4px rgba(124, 58, 237, 0.45);
         }
 
         .device-link-content {
@@ -582,28 +595,28 @@
             }
         }
 
-        /* Hover‑эффекты: лёгкое увеличение + неоновое свечение */
+        /* Hover‑эффекты: лёгкое смещение и неоновое свечение */
         .device-link:hover {
-            transform: translateY(-2px) scale(1.02);
+            transform: translateY(-3px);
             border-color: rgba(255, 255, 255, 0.8);
         }
 
         .device-link.apple:hover {
             box-shadow:
-                0 0 26px rgba(0, 122, 255, 0.7),
-                0 20px 46px rgba(0, 0, 0, 0.95);
+                0 12px 32px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(148, 163, 184, 0.35);
         }
 
         .device-link.android:hover {
             box-shadow:
-                0 0 26px rgba(61, 220, 132, 0.7),
-                0 20px 46px rgba(5, 46, 22, 0.9);
+                0 12px 32px rgba(22, 101, 52, 0.75),
+                0 0 0 1px rgba(148, 163, 184, 0.3);
         }
 
         .device-link.desktop:hover {
             box-shadow:
-                0 0 26px rgba(124, 58, 237, 0.7),
-                0 20px 46px rgba(30, 64, 175, 0.9);
+                0 12px 32px rgba(30, 64, 175, 0.75),
+                0 0 0 1px rgba(148, 163, 184, 0.35);
         }
 
         .device-link:hover .device-link-arrow {
@@ -616,9 +629,14 @@
             transform: translate3d(25%, 0, 0) rotate(8deg);
         }
 
+        .device-link:hover::after,
+        .device-link:focus-visible::after {
+            opacity: 1;
+        }
+
         /* "Haptic"‑нажатие: небольшое сжатие и смягчение тени */
         .device-link:active {
-            transform: translateY(1px) scale(0.97);
+            transform: translateY(0);
             box-shadow:
                 0 10px 28px rgba(15, 23, 42, 0.7),
                 0 0 0 1px rgba(148, 163, 184, 0.5);
@@ -652,24 +670,22 @@
 
         /* Подсветка "правильной" кнопки пульсирующей рамкой */
         .device-link.recommended {
-            animation: recommend-pulse 1.8s ease-in-out infinite;
+            /* Анимация вынесена на псевдоэлемент для более лёгкой отрисовки */
+        }
+
+        .device-link.recommended::after {
+            animation: recommend-pulse 2.2s ease-in-out infinite;
         }
 
         @keyframes recommend-pulse {
             0% {
-                box-shadow:
-                    0 0 0 0 rgba(251, 191, 36, 0.4),
-                    0 18px 40px rgba(15, 23, 42, 0.85);
+                opacity: 0.15;
             }
             70% {
-                box-shadow:
-                    0 0 0 10px rgba(251, 191, 36, 0),
-                    0 24px 52px rgba(15, 23, 42, 0.9);
+                opacity: 0.6;
             }
             100% {
-                box-shadow:
-                    0 0 0 0 rgba(251, 191, 36, 0),
-                    0 18px 40px rgba(15, 23, 42, 0.8);
+                opacity: 0.15;
             }
         }
 
@@ -801,6 +817,14 @@
         @media (min-width: 900px) {
             .card {
                 padding: 32px 28px 30px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -1033,6 +1057,13 @@
                     // Не препятствуем переходу по ссылке, ripple успевает отрисоваться
                     var rect = link.getBoundingClientRect();
                     var size = Math.max(rect.width, rect.height);
+
+                    // Удаляем предыдущий ripple, если он ещё не исчез
+                    var existing = link.querySelector('.ripple');
+                    if (existing && existing.parentNode) {
+                        existing.parentNode.removeChild(existing);
+                    }
+
                     var ripple = document.createElement('span');
 
                     var rippleClass;
@@ -1092,109 +1123,6 @@
 
             // Обновление раз в секунду
             setInterval(updateClock, 1000);
-        })();
-
-        // Модуль: 3D tilt‑эффект карточки (мышь + DeviceOrientation)
-        (function () {
-            var card = document.getElementById('card-root');
-            if (!card) return;
-
-            var maxTilt = 8; // максимальный наклон в градусах
-            var currentRotateX = 0;
-            var currentRotateY = 0;
-            var targetRotateX = 0;
-            var targetRotateY = 0;
-            var animationFrameId = null;
-            var rect = null;
-            var hasMouseMoved = false;
-
-            // Плавное интерполирование к целевому углу для 60fps
-            function animateTilt() {
-                currentRotateX += (targetRotateX - currentRotateX) * 0.16;
-                currentRotateY += (targetRotateY - currentRotateY) * 0.16;
-
-                var transform =
-                    'rotateX(' + currentRotateX.toFixed(2) + 'deg) ' +
-                    'rotateY(' + currentRotateY.toFixed(2) + 'deg)';
-
-                card.style.transform = transform;
-
-                if (Math.abs(targetRotateX - currentRotateX) > 0.01 ||
-                    Math.abs(targetRotateY - currentRotateY) > 0.01) {
-                    animationFrameId = window.requestAnimationFrame(animateTilt);
-                } else {
-                    // Когда дошли до цели — небольшая корректировка, чтобы не расходовать лишние кадры
-                    card.style.transform =
-                        'rotateX(' + targetRotateX.toFixed(2) + 'deg) ' +
-                        'rotateY(' + targetRotateY.toFixed(2) + 'deg)';
-                    animationFrameId = null;
-                }
-            }
-
-            function setTargetTilt(x, y) {
-                targetRotateX = x;
-                targetRotateY = y;
-                if (animationFrameId === null) {
-                    animationFrameId = window.requestAnimationFrame(animateTilt);
-                }
-            }
-
-            function resetTilt() {
-                setTargetTilt(0, 0);
-            }
-
-            // Управление мышью (десктоп)
-            card.addEventListener('mouseenter', function () {
-                rect = card.getBoundingClientRect();
-            });
-
-            card.addEventListener('mousemove', function (event) {
-                hasMouseMoved = true;
-                if (!rect) rect = card.getBoundingClientRect();
-
-                var x = event.clientX - rect.left;
-                var y = event.clientY - rect.top;
-
-                var percentX = (x - rect.width / 2) / (rect.width / 2);
-                var percentY = (y - rect.height / 2) / (rect.height / 2);
-
-                // Ограничиваем значения
-                if (percentX > 1) percentX = 1;
-                if (percentX < -1) percentX = -1;
-                if (percentY > 1) percentY = 1;
-                if (percentY < -1) percentY = -1;
-
-                var rotateY = percentX * maxTilt;
-                var rotateX = -percentY * maxTilt;
-
-                setTargetTilt(rotateX, rotateY);
-            });
-
-            card.addEventListener('mouseleave', function () {
-                resetTilt();
-            });
-
-            // Управление через DeviceOrientation (мобильные, если есть датчики)
-            if ('DeviceOrientationEvent' in window) {
-                window.addEventListener('deviceorientation', function (event) {
-                    // Если пользователь уже двигал мышью, не мешаемся
-                    if (hasMouseMoved) return;
-
-                    var beta = event.beta;   // наклон вперёд/назад [-180,180]
-                    var gamma = event.gamma; // наклон влево/вправо [-90,90]
-
-                    if (beta == null || gamma == null) return;
-
-                    // Нормализуем значения и ограничиваем
-                    var normalizedX = Math.max(-1, Math.min(1, beta / 45));   // -1..1
-                    var normalizedY = Math.max(-1, Math.min(1, gamma / 30));  // -1..1
-
-                    var rotateX = normalizedX * maxTilt;
-                    var rotateY = normalizedY * maxTilt;
-
-                    setTargetTilt(rotateX, rotateY);
-                });
-            }
         })();
 
         // Модуль: анимированный текст подзаголовка (эффект печатной машинки)
