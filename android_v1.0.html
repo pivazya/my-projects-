@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0e1a">
+<meta name="format-detection" content="telephone=no">
+<meta name="msapplication-tap-highlight" content="no">
+<title>Внутренние часы</title>
+<style>
+:root {
+  --bg: #0f0e1a;
+  --bg2: rgba(30,28,50,.72);
+  --glass: rgba(40,36,70,.55);
+  --glass2: rgba(50,46,80,.45);
+  --border: rgba(124,111,255,.18);
+  --a1: #7c6fff;
+  --a2: #b47aff;
+  --a3: #4ecdc4;
+  --a4: #ff6b6b;
+  --txt: #eee8ff;
+  --dim: rgba(200,195,230,.55);
+  --dim2: rgba(200,195,230,.4);
+  --radius: 18px;
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sat: env(safe-area-inset-top, 0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;height:100dvh}
+body{
+  min-height:100%;min-height:100dvh;
+  background:var(--bg);color:var(--txt);
+  font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  touch-action:manipulation;
+  user-select:none;-webkit-user-select:none;
+}
+canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:16px 16px calc(16px + var(--sab));padding-top:calc(16px + var(--sat))}
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hdr-title{font-size:22px;font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-btn{background:var(--glass);border:1px solid var(--border);color:var(--txt);border-radius:12px;padding:8px 14px;font-size:13px;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
+.hdr-btn:active{opacity:.7}
+/* ── STEP DOTS ── */
+.steps{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--glass2);transition:all .3s}
+.step-dot.active{background:var(--a1);transform:scale(1.3);box-shadow:0 0 8px rgba(124,111,255,.5)}
+.step-dot.done{background:var(--a3)}
+/* ── CARDS ── */
+.card{background:var(--glass);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:12px}
+/* ── FIELDS ── */
+.field{margin-bottom:10px}
+.field label{display:block;font-size:13px;color:var(--dim);margin-bottom:5px}
+.field input,.field select{width:100%;background:rgba(20,18,40,.6);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:16px;color:var(--txt);outline:none;-webkit-appearance:none;font-family:inherit}
+.field input::placeholder{color:var(--dim2)}
+.field select{cursor:pointer}
+.field select option{background:#1e1c32}
+.field.invalid input,.field.invalid select{border-color:var(--a4)}
+.field-err{font-size:12px;color:var(--a4);margin-top:4px;min-height:16px}
+/* ── SEGMENTS ── */
+.seg-ctrl{display:flex;background:rgba(20,18,40,.5);border-radius:12px;padding:3px;gap:3px;margin-bottom:8px}
+.seg-btn{flex:1;padding:9px 4px;background:transparent;border:none;border-radius:10px;font-size:13px;font-weight:500;color:var(--dim);cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:all .2s;white-space:nowrap}
+.seg-btn.active{background:var(--a1);color:#fff;box-shadow:0 2px 10px rgba(124,111,255,.35)}
+.seg-btn:active{opacity:.7}
+/* ── TOGGLE ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.toggle-row span{font-size:14px;color:var(--txt)}
+.toggle-switch{width:48px;height:28px;border-radius:14px;background:rgba(60,55,90,.6);border:none;cursor:pointer;position:relative;-webkit-appearance:none;touch-action:manipulation;transition:background .25s}
+.toggle-switch.active{background:var(--a1)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:transform .25s}
+.toggle-switch.active::after{transform:translateX(20px)}
+/* ── BUTTONS ── */
+.btn-primary{display:block;width:100%;padding:16px;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:700;letter-spacing:-.01em;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:transform .15s,opacity .15s}
+.btn-primary:active{transform:scale(.97);opacity:.9}
+.btn-ghost{display:block;width:100%;padding:14px;background:var(--glass);border:1px solid var(--border);color:var(--a1);border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;margin-top:8px}
+.btn-ghost:active{opacity:.7}
+.btn-ghost.red{color:var(--a4);border-color:rgba(255,107,107,.25)}
+/* ── SCREEN NAV ── */
+.screen{display:none}
+.screen.active{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+/* ── EXPERIMENT ── */
+.exp-center{display:flex;flex-direction:column;align-items:center;padding:8px 0}
+.progress-bar{width:100%;height:4px;background:rgba(60,55,90,.5);border-radius:100px;margin-bottom:6px;overflow:hidden}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--a1),var(--a3));border-radius:100px;transition:width .4s ease}
+.att-info{font-size:13px;color:var(--dim);margin-bottom:16px;text-align:center}
+.clock-wrap{position:relative;width:200px;height:200px;margin-bottom:20px}
+.clock-wrap.running .clock-face{animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(124,111,255,0),inset 0 0 20px rgba(124,111,255,.05)}50%{box-shadow:0 0 20px 6px rgba(124,111,255,.15),inset 0 0 20px rgba(124,111,255,.08)}}
+.clock-svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(60,55,90,.5);stroke-width:5}
+.ring-prog{fill:none;stroke:url(#grad);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .05s linear}
+.clock-face{position:absolute;inset:14px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:box-shadow .3s}
+.clock-time{font-size:48px;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1}
+.clock-hint{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.tip-box{background:rgba(124,111,255,.08);border:1px solid rgba(124,111,255,.12);border-radius:14px;padding:10px 14px;font-size:13px;color:var(--dim);line-height:1.5;text-align:center;margin-bottom:20px;max-width:340px}
+.tip-box strong{color:var(--txt)}
+/* ── Big buttons ── */
+.tap-btn{width:160px;height:160px;border-radius:50%;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:transform .15s}
+.tap-btn:active{transform:scale(.93)}
+.tap-start{background:radial-gradient(circle at 40% 35%,#34d073,#0a9e42);box-shadow:0 8px 28px rgba(52,199,89,.35)}
+.tap-stop{background:radial-gradient(circle at 40% 35%,#ff5e4d,#d0170a);box-shadow:0 8px 28px rgba(255,59,48,.35);display:none}
+.tap-icon{font-size:32px;margin-bottom:4px}
+/* ── RESULTS ── */
+.hero-card{background:linear-gradient(135deg,rgba(124,111,255,.15),rgba(78,205,196,.1));border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:12px}
+.hero-name{font-size:14px;color:var(--dim);margin-bottom:6px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat-cell{background:var(--glass2);border-radius:12px;padding:12px 8px;text-align:center}
+.stat-val{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:2px}
+.stat-lbl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.acc-wrap{margin-bottom:12px}
+.acc-header{display:flex;justify-content:space-between;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--dim);margin-bottom:8px}
+.acc-track{height:6px;background:rgba(60,55,90,.5);border-radius:100px;overflow:hidden}
+.acc-fill{height:100%;background:linear-gradient(90deg,var(--a1),var(--a3));border-radius:100px;width:0;transition:width 1s cubic-bezier(.16,1,.3,1)}
+.verdict-box{background:rgba(124,111,255,.08);border:1px solid rgba(124,111,255,.12);border-radius:14px;padding:14px;font-size:14px;line-height:1.7;color:var(--dim);margin-bottom:12px}
+.verdict-box strong{color:var(--txt)}
+/* Chart */
+.chart-bars{display:flex;align-items:flex-end;gap:5px;height:70px;margin-bottom:6px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:3px 3px 0 0;min-height:3px;transition:height .6s cubic-bezier(.16,1,.3,1)}
+.bar-over{background:linear-gradient(to top,var(--a4),rgba(255,107,107,.3))}
+.bar-under{background:linear-gradient(to top,var(--a1),rgba(124,111,255,.3))}
+.bar-mid{background:var(--a3);opacity:.7}
+.chart-bar-lbl{font-size:10px;color:var(--dim2)}
+/* Table */
+.res-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.res-tbl th{padding:8px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);border-bottom:1px solid var(--border)}
+.res-tbl td{padding:8px;border-bottom:1px solid rgba(124,111,255,.08);color:var(--dim)}
+.dev-pos{color:var(--a4)}.dev-neg{color:var(--a1)}.dev-zero{color:var(--a3)}
+/* ── HISTORY ── */
+.tag{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.tag-tc{background:rgba(78,205,196,.15);color:var(--a3)}
+.tag-tv{background:rgba(255,107,107,.15);color:var(--a4)}
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmp-cell{background:var(--glass2);border-radius:12px;padding:12px;text-align:center}
+.cmp-val{font-size:22px;font-weight:700;margin-bottom:3px}
+.cmp-lbl{font-size:12px;color:var(--dim)}
+.cmp-sub{font-size:11px;color:var(--dim2);margin-top:2px}
+.ac2{color:var(--a4)}.ac3{color:var(--a3)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hist-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:420px}
+.hist-tbl th{padding:7px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);border-bottom:1px solid var(--border);white-space:nowrap}
+.hist-tbl td{padding:7px;border-bottom:1px solid rgba(124,111,255,.06);color:var(--dim);white-space:nowrap}
+.empty-state{text-align:center;padding:50px 16px;color:var(--dim)}
+.empty-icon{font-size:48px;display:block;margin-bottom:12px}
+/* ── COUNTDOWN ── */
+#cd-overlay{position:fixed;inset:0;background:rgba(15,14,26,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column}
+#cd-overlay.open{display:flex}
+#cd-num{font-size:120px;font-weight:700;color:#fff;animation:cdPop .55s cubic-bezier(.34,1.56,.64,1);line-height:1}
+@keyframes cdPop{from{opacity:0;transform:scale(1.8)}to{opacity:1;transform:scale(1)}}
+/* ── MODAL ── */
+#info-modal-bg{position:fixed;inset:0;background:rgba(15,14,26,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+#info-modal-bg.open{display:flex}
+.modal{background:var(--bg2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;max-width:400px;width:100%;max-height:80vh;overflow-y:auto;padding:20px}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:12px;color:var(--txt)}
+.modal h4{font-size:14px;font-weight:600;margin:12px 0 4px;color:var(--txt)}
+.modal p{font-size:14px;line-height:1.7;color:var(--dim);margin-bottom:6px}
+.modal-close{float:right;background:var(--glass);border:1px solid var(--border);color:var(--txt);width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;touch-action:manipulation}
+.modal-close:active{opacity:.7}
+/* ── TOAST ── */
+#toast{position:fixed;bottom:calc(24px + var(--sab));left:50%;transform:translateX(-50%) translateY(60px);background:rgba(50,46,80,.92);backdrop-filter:blur(10px);border-radius:100px;padding:10px 20px;font-size:13px;font-weight:500;color:#fff;pointer-events:none;opacity:0;white-space:nowrap;z-index:500;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* ── SPARKS ── */
+.spark{position:fixed;pointer-events:none;z-index:600;font-size:20px;animation:sparkFly .75s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.1)}}
+</style>
+</head>
+<body>
+
+<canvas id="cvs"></canvas>
+
+<div id="cd-overlay">
+  <div id="cd-num">3</div>
+  <div style="font-size:14px;color:var(--dim);margin-top:10px;letter-spacing:.1em;text-transform:uppercase">Приготовьтесь</div>
+</div>
+
+<div id="info-modal-bg">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <h3>Как это работает</h3>
+    <h4>Задача</h4>
+    <p>Нажмите «Старт» и остановите таймер, когда почувствуете, что прошло заданное время. Без счёта, без часов — только ощущение.</p>
+    <h4>CE — систематическая ошибка</h4>
+    <p>Среднее смещение. «+» — часы <em>отстают</em>. «−» — <em>спешат</em>.</p>
+    <h4>AE — абсолютная ошибка</h4>
+    <p>Средняя величина ошибки — показатель общей точности внутренних часов.</p>
+    <h4>Цель исследования</h4>
+    <p>Изучить, как короткие видео (ВК Клипы, YouTube Shorts и др.) влияют на восприятие времени у подростков.</p>
+  </div>
+</div>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-title">⏱ Внутренние часы</div>
+    <button class="hdr-btn" id="btn-info">О тесте</button>
+  </div>
+  <div class="steps">
+    <div class="step-dot active" id="d1"></div>
+    <div class="step-dot" id="d2"></div>
+    <div class="step-dot" id="d3"></div>
+    <div class="step-dot" id="d4"></div>
+  </div>
+
+  <!-- ══ SCREEN 1: SETTINGS ══ -->
+  <div class="screen active" id="s1">
+    <div class="card">
+      <div class="card-label">Участник</div>
+      <div class="field" id="fi">
+        <label>Имя или ID</label>
+        <input id="iid" type="text" placeholder="Введите имя" maxlength="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div class="field-err"></div>
+      </div>
+      <div class="field" id="fa">
+        <label>Возраст</label>
+        <input id="iage" type="number" placeholder="8–99" min="8" max="99" inputmode="numeric">
+        <div class="field-err"></div>
+      </div>
+      <div class="field" id="fg">
+        <label>Пол</label>
+        <select id="igen">
+          <option value="">— Выберите —</option>
+          <option value="М">Мужской</option>
+          <option value="Ж">Женский</option>
+          <option value="?">Не указывать</option>
+        </select>
+        <div class="field-err"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Условие</div>
+      <div class="seg-ctrl" id="seg-c">
+        <button class="seg-btn active" type="button" data-v="Без видео">🙅 Без видео</button>
+        <button class="seg-btn" type="button" data-v="После видео">📱 После видео</button>
+      </div>
+      <div style="font-size:12px;color:var(--dim2);line-height:1.5;margin-top:4px">«После видео» — если перед тестом смотрели ВК Клипы / YouTube Shorts.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Параметры теста</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:6px">Целевое время (секунды)</div>
+      <div class="seg-ctrl" id="seg-t">
+        <button class="seg-btn" type="button" data-v="15">15 с</button>
+        <button class="seg-btn active" type="button" data-v="30">30 с</button>
+        <button class="seg-btn" type="button" data-v="60">60 с</button>
+      </div>
+      <div style="font-size:12px;color:var(--dim);margin:8px 0 6px">Количество попыток</div>
+      <div class="seg-ctrl" id="seg-n">
+        <button class="seg-btn" type="button" data-v="3">3</button>
+        <button class="seg-btn active" type="button" data-v="5">5</button>
+        <button class="seg-btn" type="button" data-v="7">7</button>
+        <button class="seg-btn" type="button" data-v="10">10</button>
+      </div>
+      <div style="height:8px"></div>
+      <div class="toggle-row">
+        <span>🔊 Звуковые сигналы</span>
+        <button class="toggle-switch active" id="sound-tog" type="button"></button>
+      </div>
+      <div style="height:6px"></div>
+      <div class="toggle-row">
+        <span>⏳ Отсчёт 3–2–1</span>
+        <button class="toggle-switch active" id="cd-tog" type="button"></button>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-begin" type="button">Начать эксперимент</button>
+    <button class="btn-ghost" id="btn-go-hist-1" type="button">📊 История</button>
+  </div>
+
+  <!-- ══ SCREEN 2: EXPERIMENT ══ -->
+  <div class="screen" id="s2">
+    <div class="exp-center">
+      <div class="progress-bar"><div class="fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="att-info">Попытка <span id="att-cur">1</span> из <span id="att-tot">5</span></div>
+
+      <div class="clock-wrap" id="clock-wrap">
+        <svg class="clock-svg" viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#7c6fff"/>
+              <stop offset="100%" stop-color="#4ecdc4"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="100" cy="100" r="92"/>
+          <circle class="ring-prog" id="ring-prog" cx="100" cy="100" r="92"
+            stroke-dasharray="578.05" stroke-dashoffset="578.05"/>
+        </svg>
+        <div class="clock-face">
+          <div class="clock-time" id="clock-time">30</div>
+          <div class="clock-hint" id="clock-hint">цель</div>
+        </div>
+      </div>
+
+      <div class="tip-box" id="tip-box"></div>
+
+      <button class="tap-btn tap-start" id="btn-start" type="button">
+        <div class="tap-icon">▶</div>СТАРТ
+      </button>
+      <button class="tap-btn tap-stop" id="btn-stop" type="button">
+        <div class="tap-icon">⬛</div>СТОП
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: RESULTS ══ -->
+  <div class="screen" id="s3">
+    <div class="hero-card">
+      <div class="hero-name" id="res-name"></div>
+      <div class="stat-grid">
+        <div class="stat-cell"><div class="stat-val" id="sv-mean">—</div><div class="stat-lbl">Среднее</div></div>
+        <div class="stat-cell"><div class="stat-val" id="sv-ae">—</div><div class="stat-lbl">AE ошибка</div></div>
+        <div class="stat-cell"><div class="stat-val" id="sv-ce">—</div><div class="stat-lbl">CE смещение</div></div>
+      </div>
+      <div class="acc-wrap">
+        <div class="acc-header"><span>Точность</span><span id="acc-pct">—</span></div>
+        <div class="acc-track"><div class="acc-fill" id="acc-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="verdict-box" id="verdict-box"></div>
+
+    <div class="card">
+      <div class="card-label">График отклонений</div>
+      <div class="chart-bars" id="chart-bars"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Все попытки</div>
+      <table class="res-tbl">
+        <thead><tr><th>#</th><th>Время</th><th>Откл.</th><th></th></tr></thead>
+        <tbody id="res-tbody"></tbody>
+      </table>
+    </div>
+
+    <button class="btn-primary" id="btn-share" type="button">Поделиться результатом</button>
+    <button class="btn-ghost" id="btn-csv" type="button">💾 Скачать CSV</button>
+    <button class="btn-ghost" id="btn-go-hist-3" type="button">📊 История</button>
+    <button class="btn-ghost" id="btn-new" type="button">+ Новый участник</button>
+  </div>
+
+  <!-- ══ SCREEN 4: HISTORY ══ -->
+  <div class="screen" id="s4">
+    <div id="hist-content"></div>
+    <button class="btn-ghost" id="btn-csv-all" type="button">💾 Экспортировать всё в CSV</button>
+    <button class="btn-ghost red" id="btn-clear-hist" type="button">🗑 Очистить историю</button>
+    <button class="btn-ghost" id="btn-go-s1" type="button">← Назад</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ── CANVAS PARTICLES ─────────────────────────────────────────
+(function() {
+  try {
+    var c = document.getElementById('cvs');
+    if (!c) return;
+    var ctx = c.getContext('2d');
+    var W, H, pts = [];
+    function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize, {passive: true});
+    for (var i = 0; i < 22; i++) {
+      pts.push({
+        x: Math.random() * 1000, y: Math.random() * 1000,
+        vx: (Math.random() - .5) * .2, vy: (Math.random() - .5) * .2,
+        r: Math.random() * 1.3 + .4, a: Math.random() * .35 + .1
+      });
+    }
+    function draw() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(124,111,255,' + p.a + ')';
+        ctx.fill();
+      }
+      for (var i = 0; i < pts.length; i++) {
+        for (var j = i + 1; j < pts.length; j++) {
+          var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 80) {
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            ctx.strokeStyle = 'rgba(124,111,255,' + (.055 * (1 - d / 80)) + ')';
+            ctx.lineWidth = .5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  } catch(e) {}
+})();
+
+// ── AUDIO ──────────────────────────────────────────────────────
+var audioCtx = null;
+function getAC() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  } catch(e) { return null; }
+}
+function resumeAudio() {
+  try { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); } catch(e) {}
+}
+document.addEventListener('touchstart', resumeAudio, {once: false, passive: true});
+document.addEventListener('click', resumeAudio, {once: false, passive: true});
+function beep(freq, dur, vol, type) {
+  try {
+    var ac = getAC(); if (!ac) return;
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = type || 'sine'; o.frequency.value = freq || 440;
+    g.gain.setValueAtTime(vol || .2, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + (dur || .1));
+    o.start(); o.stop(ac.currentTime + (dur || .1) + .02);
+  } catch(e) {}
+}
+function sndStart()  { beep(660, .07, .17, 'triangle'); }
+function sndStop()   { beep(440, .12, .2, 'sine'); }
+function sndCd()     { beep(520, .06, .14, 'square'); }
+function sndFinish() {
+  try {
+    var ac = getAC(); if (!ac) return;
+    var t = ac.currentTime;
+    [[440,.06],[550,.06],[660,.2]].forEach(function(x, i) {
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.type = 'triangle'; o.frequency.value = x[0];
+      g.gain.setValueAtTime(.17, t + i * .12);
+      g.gain.exponentialRampToValueAtTime(.001, t + i * .12 + x[1] + .1);
+      o.start(t + i * .12); o.stop(t + i * .12 + x[1] + .15);
+    });
+  } catch(e) {}
+}
+function isSnd() { return document.getElementById('sound-tog').classList.contains('active'); }
+function isCd()  { return document.getElementById('cd-tog').classList.contains('active'); }
+
+// ── HAPTIC ─────────────────────────────────────────────────────
+function haptic(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch(e) {} }
+
+// ── STATE ──────────────────────────────────────────────────────
+var cfg = {}, attempts = [], curAtt = 0, t0 = null, running = false;
+var ringCirc = 578.05;
+var cdTimer = null, cdActive = false;
+
+// ── SAFE BUTTON HELPER ─────────────────────────────────────────
+function onBtn(id, fn) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var touched = false;
+  el.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    touched = true;
+    fn();
+    setTimeout(function() { touched = false; }, 300);
+  }, {passive: false});
+  el.addEventListener('click', function(e) {
+    if (!touched) fn();
+  });
+}
+
+// ── SEGMENT CONTROLS ───────────────────────────────────────────
+function initSegs() {
+  var segs = document.querySelectorAll('.seg-ctrl');
+  for (var i = 0; i < segs.length; i++) {
+    (function(seg) {
+      var btns = seg.querySelectorAll('.seg-btn');
+      for (var j = 0; j < btns.length; j++) {
+        (function(btn) {
+          var touched = false;
+          btn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            touched = true;
+            activateSeg(seg, btn);
+            setTimeout(function() { touched = false; }, 300);
+          }, {passive: false});
+          btn.addEventListener('click', function() {
+            if (!touched) activateSeg(seg, btn);
+          });
+        })(btns[j]);
+      }
+    })(segs[i]);
+  }
+}
+function activateSeg(seg, btn) {
+  var btns = seg.querySelectorAll('.seg-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+}
+function getSeg(id) {
+  var b = document.querySelector('#' + id + ' .seg-btn.active');
+  return b ? b.getAttribute('data-v') : null;
+}
+
+// ── TOGGLE ─────────────────────────────────────────────────────
+function initToggles() {
+  var toggles = document.querySelectorAll('.toggle-switch');
+  for (var i = 0; i < toggles.length; i++) {
+    (function(t) {
+      var touched = false;
+      t.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        touched = true;
+        t.classList.toggle('active');
+        setTimeout(function() { touched = false; }, 300);
+      }, {passive: false});
+      t.addEventListener('click', function() {
+        if (!touched) t.classList.toggle('active');
+      });
+    })(toggles[i]);
+  }
+}
+
+// ── SCREEN NAV ─────────────────────────────────────────────────
+function showScreen(n) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+  var target = document.getElementById('s' + n);
+  if (target) target.classList.add('active');
+  for (var i = 1; i <= 4; i++) {
+    var d = document.getElementById('d' + i);
+    if (!d) continue;
+    d.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+  }
+  try { history.pushState({screen: n}, ''); } catch(e) {}
+  try { window.scrollTo({top: 0, behavior: 'smooth'}); } catch(e) { window.scrollTo(0, 0); }
+}
+
+// ── VALIDATION ─────────────────────────────────────────────────
+function validate(fid, ok, msg) {
+  var f = document.getElementById(fid);
+  if (!f) return true;
+  if (!ok) {
+    f.classList.add('invalid');
+    var err = f.querySelector('.field-err');
+    if (err) err.textContent = msg || '';
+    return false;
+  }
+  f.classList.remove('invalid');
+  var err2 = f.querySelector('.field-err');
+  if (err2) err2.textContent = '';
+  return true;
+}
+
+// ── BEGIN EXPERIMENT ───────────────────────────────────────────
+function beginExp() {
+  try { getAC(); } catch(e) {}
+  var id = document.getElementById('iid').value.trim();
+  var age = parseInt(document.getElementById('iage').value, 10);
+  var gen = document.getElementById('igen').value;
+  var ok = true;
+  if (!validate('fi', id.length > 0, 'Введите имя или ID')) ok = false;
+  if (!validate('fa', !isNaN(age) && age >= 8 && age <= 99, 'Возраст: 8–99')) ok = false;
+  if (!validate('fg', gen !== '', 'Выберите пол')) ok = false;
+  if (!ok) { haptic([20, 20, 20]); return; }
+  cfg = {
+    id: id, age: age, gen: gen,
+    cond: getSeg('seg-c'),
+    target: +(getSeg('seg-t')),
+    total: +(getSeg('seg-n')),
+    ts: new Date().toISOString()
+  };
+  attempts = []; curAtt = 0;
+  setupExp();
+  showScreen(2);
+}
+
+var TIPS = [
+  '💡 <strong>Не считайте</strong> про себя — доверьтесь ощущениям.',
+  '💡 <strong>Расслабьтесь</strong> — напряжение ускоряет восприятие времени.',
+  '💡 Попробуйте <strong>закрыть глаза</strong> — многим помогает.',
+  '💡 <strong>Дышите ровно</strong> — ритм дыхания влияет на восприятие.',
+  '💡 Каждая попытка <strong>независима</strong> — не ориентируйтесь на предыдущую.',
+  '💡 Чем спокойнее мозг, тем <strong>точнее</strong> внутренние часы.',
+];
+
+function setupExp() {
+  document.getElementById('clock-time').textContent = cfg.target;
+  document.getElementById('att-cur').textContent = curAtt + 1;
+  document.getElementById('att-tot').textContent = cfg.total;
+  document.getElementById('prog-fill').style.width = (curAtt / cfg.total * 100) + '%';
+  document.getElementById('tip-box').innerHTML = TIPS[curAtt % TIPS.length];
+  document.getElementById('clock-hint').textContent = 'цель';
+  document.getElementById('clock-wrap').classList.remove('running');
+  document.getElementById('btn-start').style.display = 'flex';
+  document.getElementById('btn-stop').style.display = 'none';
+  document.getElementById('ring-prog').style.strokeDashoffset = ringCirc;
+  running = false;
+}
+
+// ── COUNTDOWN + START ──────────────────────────────────────────
+function doStart() {
+  if (running || cdActive) return;
+  try { getAC(); } catch(e) {}
+  if (isCd()) {
+    var ov = document.getElementById('cd-overlay');
+    var el = document.getElementById('cd-num');
+    var n = 3;
+    el.textContent = n;
+    ov.classList.add('open');
+    cdActive = true;
+    if (isSnd()) sndCd();
+    if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
+    cdTimer = setInterval(function() {
+      n--;
+      if (n > 0) {
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = 'cdPop .55s cubic-bezier(.34,1.56,.64,1)';
+        el.textContent = n;
+        if (isSnd()) sndCd();
+      } else {
+        clearInterval(cdTimer);
+        cdTimer = null;
+        cdActive = false;
+        ov.classList.remove('open');
+        actuallyStart();
+      }
+    }, 700);
+  } else {
+    actuallyStart();
+  }
+}
+
+function actuallyStart() {
+  t0 = performance.now();
+  running = true;
+  requestWakeLock();
+  haptic(30);
+  if (isSnd()) sndStart();
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-stop').style.display = 'flex';
+  document.getElementById('clock-wrap').classList.add('running');
+  document.getElementById('clock-time').textContent = '···';
+  document.getElementById('clock-hint').textContent = 'иди!';
+}
+
+function doStop() {
+  if (!running) return;
+  var elapsed = (performance.now() - t0) / 1000;
+  running = false;
+  haptic(50);
+  if (isSnd()) sndStop();
+  attempts.push(+elapsed.toFixed(3));
+  curAtt++;
+  spawnSparks(document.getElementById('btn-stop'));
+  if (curAtt >= cfg.total) {
+    setTimeout(finishExp, 320);
+  } else {
+    toast('Попытка ' + curAtt + ' записана ✓');
+    setTimeout(setupExp, 420);
+  }
+}
+
+// ── SPARKLES ───────────────────────────────────────────────────
+function spawnSparks(el) {
+  try {
+    var r = el.getBoundingClientRect();
+    var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    var em = ['⭐','✨','💫','🌟','⚡'];
+    for (var i = 0; i < 6; i++) {
+      var s = document.createElement('div');
+      s.className = 'spark';
+      s.textContent = em[i % em.length];
+      var ang = Math.random() * Math.PI * 2, dist = 55 + Math.random() * 65;
+      s.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;' +
+        '--tx:' + (Math.cos(ang) * dist) + 'px;' +
+        '--ty:' + (Math.sin(ang) * dist - 28) + 'px';
+      document.body.appendChild(s);
+      setTimeout(function(x) { if (x.parentNode) x.parentNode.removeChild(x); }, 750, s);
+    }
+  } catch(e) {}
+}
+
+// ── FINISH ─────────────────────────────────────────────────────
+function finishExp() {
+  releaseWakeLock();
+  if (isSnd()) sndFinish();
+  haptic([30, 20, 60]);
+  var tgt = cfg.target, n = attempts.length;
+  var sum = 0;
+  for (var i = 0; i < n; i++) sum += attempts[i];
+  var mean = sum / n;
+  var aeSum = 0;
+  for (var i = 0; i < n; i++) aeSum += Math.abs(attempts[i] - tgt);
+  var ae = aeSum / n;
+  var ce = mean - tgt;
+  var acc = Math.max(0, 100 * (1 - ae / tgt));
+
+  document.getElementById('res-name').textContent = cfg.id;
+
+  animCount('sv-mean', mean, 'с');
+  animCount('sv-ae', ae, 'с');
+  var ceStr = (ce >= 0 ? '+' : '') + ce.toFixed(1) + 'с';
+  document.getElementById('sv-ce').textContent = ceStr;
+  document.getElementById('sv-ce').style.color = ce > 1 ? 'var(--a4)' : ce < -1 ? 'var(--a3)' : 'var(--dim2)';
+
+  setTimeout(function() {
+    document.getElementById('acc-fill').style.width = acc + '%';
+    document.getElementById('acc-pct').textContent = Math.round(acc) + '%';
+  }, 300);
+
+  var v = '';
+  if (acc >= 90)
+    v = '<strong>🎯 Превосходно!</strong> Точность ' + Math.round(acc) + '% — внутренние часы работают исключительно точно. Смещение: <strong>' + ceStr + '</strong>.';
+  else if (acc >= 70)
+    v = '<strong>👍 Хорошо!</strong> Точность ' + Math.round(acc) + '%. ' + (ce > 0 ? 'Часы слегка <strong>отстают</strong> (+' + ce.toFixed(1) + 'с).' : 'Часы слегка <strong>спешат</strong> (' + ce.toFixed(1) + 'с).') + ' Средняя ошибка: ' + ae.toFixed(1) + 'с.';
+  else if (ce > 1)
+    v = '<strong>⏳ Часы отстают (+' + ce.toFixed(1) + 'с).</strong> Вы нажимаете «Стоп» позже цели — субъективное время течёт <strong>медленнее</strong>. Средняя ошибка: ' + ae.toFixed(1) + 'с.';
+  else if (ce < -1)
+    v = '<strong>⚡ Часы спешат (' + ce.toFixed(1) + 'с).</strong> Вы нажимаете «Стоп» раньше цели — субъективное время течёт <strong>быстрее</strong>. Средняя ошибка: ' + ae.toFixed(1) + 'с.';
+  else
+    v = '<strong>🔄 Небольшое смещение.</strong> CE = ' + ceStr + ', AE = ' + ae.toFixed(1) + 'с. Внутренние часы достаточно точны!';
+  document.getElementById('verdict-box').innerHTML = v;
+
+  var bars = document.getElementById('chart-bars');
+  bars.innerHTML = '';
+  var maxD = 0;
+  for (var i = 0; i < attempts.length; i++) {
+    var d = Math.abs(attempts[i] - tgt);
+    if (d > maxD) maxD = d;
+  }
+  if (maxD < 0.5) maxD = 0.5;
+  for (var i = 0; i < attempts.length; i++) {
+    var dev = attempts[i] - tgt;
+    var pct = Math.abs(dev) / maxD * 66;
+    var cls = dev > 0.3 ? 'bar-over' : dev < -0.3 ? 'bar-under' : 'bar-mid';
+    var col = document.createElement('div');
+    col.className = 'chart-col';
+    var bar = document.createElement('div');
+    bar.className = 'chart-bar ' + cls;
+    bar.style.height = '0px';
+    var lbl = document.createElement('div');
+    lbl.className = 'chart-bar-lbl';
+    lbl.textContent = i + 1;
+    col.appendChild(bar); col.appendChild(lbl);
+    bars.appendChild(col);
+    (function(b, h) { setTimeout(function() { b.style.height = h + 'px'; }, 120); })(bar, pct);
+  }
+
+  var tb = document.getElementById('res-tbody');
+  tb.innerHTML = '';
+  for (var i = 0; i < attempts.length; i++) {
+    var dev = attempts[i] - tgt;
+    var cls = dev > 0.3 ? 'dev-pos' : dev < -0.3 ? 'dev-neg' : 'dev-zero';
+    var star = Math.abs(dev) < tgt * .1 ? '⭐' : Math.abs(dev) < tgt * .2 ? '🆗' : '❌';
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td style="color:var(--dim)">' + (i+1) + '</td>' +
+      '<td>' + attempts[i].toFixed(2) + '</td>' +
+      '<td class="' + cls + '">' + (dev >= 0 ? '+' : '') + dev.toFixed(2) + '</td>' +
+      '<td>' + star + '</td>';
+    tb.appendChild(tr);
+  }
+
+  saveHist(mean, ae, ce);
+  showScreen(3);
+}
+
+function animCount(id, val, sfx) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var end = +val.toFixed(1), startT = null;
+  function step(t) {
+    if (!startT) startT = t;
+    var p = Math.min((t - startT) / 600, 1);
+    var e = 1 - Math.pow(1 - p, 3);
+    el.textContent = (e * end).toFixed(1) + (sfx || '');
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = end.toFixed(1) + (sfx || '');
+  }
+  requestAnimationFrame(step);
+}
+
+// ── HISTORY ────────────────────────────────────────────────────
+function getHist() {
+  try {
+    var raw = localStorage.getItem('timeexp_v2');
+    if (!raw) return [];
+    var data = JSON.parse(raw);
+    return Array.isArray(data) ? data : [];
+  } catch(e) {
+    return [];
+  }
+}
+function saveHist(mean, ae, ce) {
+  try {
+    var h = getHist();
+    h.push({
+      date: new Date().toLocaleString('ru'),
+      id: cfg.id, age: cfg.age, gen: cfg.gen,
+      cond: cfg.cond, tgt: cfg.target, n: cfg.total,
+      mean: +mean.toFixed(3), ae: +ae.toFixed(3), ce: +ce.toFixed(3),
+      raw: attempts.join(';')
+    });
+    localStorage.setItem('timeexp_v2', JSON.stringify(h));
+  } catch(e) {}
+}
+function renderHist() {
+  var h = getHist();
+  var cont = document.getElementById('hist-content');
+  if (!h.length) {
+    cont.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span>Нет данных. Проведите первый эксперимент!</div>';
+    return;
+  }
+  var groups = {};
+  for (var i = 0; i < h.length; i++) {
+    var r = h[i];
+    if (!groups[r.cond]) groups[r.cond] = {ces: [], aes: [], n: 0};
+    groups[r.cond].ces.push(r.ce);
+    groups[r.cond].aes.push(r.ae);
+    groups[r.cond].n++;
+  }
+  var compHTML = '';
+  if (groups['Без видео'] && groups['После видео']) {
+    var g1 = groups['Без видео'], g2 = groups['После видео'];
+    var ce1 = g1.ces.reduce(function(a,b){return a+b;},0) / g1.ces.length;
+    var ce2 = g2.ces.reduce(function(a,b){return a+b;},0) / g2.ces.length;
+    var ae1 = g1.aes.reduce(function(a,b){return a+b;},0) / g1.aes.length;
+    var ae2 = g2.aes.reduce(function(a,b){return a+b;},0) / g2.aes.length;
+    var diff = Math.abs(ce2 - ce1);
+    compHTML = '<div class="card"><div class="card-label">Сравнение групп</div>' +
+      '<div class="cmp-grid">' +
+      '<div class="cmp-cell"><div class="cmp-val ac3">' + (ce1>=0?'+':'') + ce1.toFixed(1) + 'с</div><div class="cmp-lbl">CE без видео</div><div class="cmp-sub">' + g1.n + ' сессий · AE ' + ae1.toFixed(1) + 'с</div></div>' +
+      '<div class="cmp-cell"><div class="cmp-val ac2">' + (ce2>=0?'+':'') + ce2.toFixed(1) + 'с</div><div class="cmp-lbl">CE после видео</div><div class="cmp-sub">' + g2.n + ' сессий · AE ' + ae2.toFixed(1) + 'с</div></div>' +
+      '</div><p style="font-size:12px;color:var(--dim2);margin-top:12px;line-height:1.6">Разница CE: <strong style="color:var(--a4)">' + diff.toFixed(1) + ' сек</strong>. ' +
+      (diff > 1 ? 'Эффект заметен — видео влияет на восприятие.' : 'Данных пока мало для уверенного вывода.') +
+      '</p></div>';
+  }
+  var sumHTML = '';
+  var keys = Object.keys(groups);
+  for (var k = 0; k < keys.length; k++) {
+    var cond = keys[k], data = groups[cond];
+    var avgCE = data.ces.reduce(function(a,b){return a+b;},0) / data.ces.length;
+    var avgAE = data.aes.reduce(function(a,b){return a+b;},0) / data.aes.length;
+    var tagCls = cond === 'После видео' ? 'tag-tv' : 'tag-tc';
+    sumHTML += '<div class="card">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+      '<span class="tag ' + tagCls + '">' + cond + '</span>' +
+      '<span style="font-size:11.5px;color:var(--dim)">' + data.n + ' сессий</span></div>' +
+      '<div class="stat-grid">' +
+      '<div class="stat-cell"><div class="stat-val" style="font-size:18px">' + (avgCE>=0?'+':'') + avgCE.toFixed(1) + 'с</div><div class="stat-lbl">CE ср.</div></div>' +
+      '<div class="stat-cell"><div class="stat-val" style="font-size:18px">' + avgAE.toFixed(1) + 'с</div><div class="stat-lbl">AE ср.</div></div>' +
+      '<div class="stat-cell"><div class="stat-val" style="font-size:18px">' + data.n + '</div><div class="stat-lbl">Участн.</div></div>' +
+      '</div></div>';
+  }
+  var rows = '';
+  var rev = h.slice().reverse();
+  for (var i = 0; i < rev.length; i++) {
+    var r = rev[i];
+    var tagCls2 = r.cond === 'После видео' ? 'tag-tv' : 'tag-tc';
+    rows += '<tr><td>' + r.date + '</td><td>' + r.id + '</td><td>' + r.age + '/' + r.gen + '</td>' +
+      '<td><span class="tag ' + tagCls2 + '">' + r.cond + '</span></td>' +
+      '<td>' + r.tgt + 'с</td>' +
+      '<td>' + (r.ce>=0?'+':'') + r.ce.toFixed(1) + 'с</td>' +
+      '<td>' + r.ae.toFixed(1) + 'с</td></tr>';
+  }
+  cont.innerHTML = compHTML + sumHTML +
+    '<div class="card"><div class="card-label">Все записи (' + h.length + ')</div>' +
+    '<div class="tscroll"><table class="hist-tbl"><thead><tr>' +
+    '<th>Дата</th><th>ID</th><th>Возр</th><th>Условие</th><th>Цель</th><th>CE</th><th>AE</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+}
+
+function clearHist() {
+  if (confirm('Очистить все данные? Это нельзя отменить.')) {
+    localStorage.removeItem('timeexp_v2');
+    renderHist();
+    toast('База очищена 🗑');
+  }
+}
+
+// ── CSV ────────────────────────────────────────────────────────
+function dlCSV() {
+  var tgt = cfg.target;
+  var csv = 'Попытка,Время (с),Отклонение (с)\n';
+  for (var i = 0; i < attempts.length; i++)
+    csv += (i+1) + ',' + attempts[i].toFixed(3) + ',' + (attempts[i]-tgt).toFixed(3) + '\n';
+  var sum = 0; for (var i = 0; i < attempts.length; i++) sum += attempts[i];
+  var mean = sum / attempts.length;
+  var aeS = 0; for (var i = 0; i < attempts.length; i++) aeS += Math.abs(attempts[i]-tgt);
+  var ae = aeS / attempts.length, ce = mean - tgt;
+  csv += '\nПараметры\nID,' + cfg.id + '\nВозраст,' + cfg.age + '\nПол,' + cfg.gen +
+    '\nУсловие,' + cfg.cond + '\nЦелевое время,' + tgt + 'с\nСреднее,' + mean.toFixed(3) +
+    'с\nAE,' + ae.toFixed(3) + 'с\nCE,' + ce.toFixed(3) + 'с\n';
+  saveCsvFile(csv, 'часы_' + cfg.id + '_' + Date.now() + '.csv');
+}
+function dlAll() {
+  var h = getHist();
+  if (!h.length) { toast('Нет данных'); return; }
+  var csv = 'Дата,ID,Возраст,Пол,Условие,Цель(с),Попыток,Среднее(с),AE(с),CE(с),Попытки\n';
+  for (var i = 0; i < h.length; i++) {
+    var r = h[i];
+    csv += '"' + r.date + '","' + r.id + '",' + r.age + ',"' + r.gen + '","' + r.cond + '",' +
+      r.tgt + ',' + r.n + ',' + r.mean + ',' + r.ae + ',' + r.ce + ',"' + r.raw + '"\n';
+  }
+  saveCsvFile(csv, 'все_данные_' + Date.now() + '.csv');
+}
+function saveCsvFile(content, name) {
+  try {
+    var blob = new Blob(['\uFEFF' + content], {type: 'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+    toast('Файл сохранён ✓');
+  } catch(e) { toast('Не удалось скачать'); }
+}
+
+// ── SHARE ──────────────────────────────────────────────────────
+function shareResult() {
+  var tgt = cfg.target, sum = 0;
+  for (var i = 0; i < attempts.length; i++) sum += attempts[i];
+  var mean = sum / attempts.length, ce = mean - tgt;
+  var txt = '⏱ Внутренние часы: цель ' + tgt + 'с, среднее ' + mean.toFixed(1) + 'с, смещение ' +
+    (ce>=0?'+':'') + ce.toFixed(1) + 'с. Условие: ' + cfg.cond + '.';
+  if (navigator.share) {
+    navigator.share({title: 'Внутренние часы', text: txt}).catch(function(){});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt)
+      .then(function() { toast('Скопировано в буфер 📋'); })
+      .catch(function() { toast('Скопируйте вручную'); });
+  } else {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;opacity:0;left:-9999px';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      toast(ok ? 'Скопировано в буфер 📋' : 'Скопируйте вручную');
+    } catch(e) { toast('Скопируйте вручную'); }
+  }
+}
+
+// ── TOAST ──────────────────────────────────────────────────────
+var toastTimer = null;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2500);
+}
+
+// ── COUNTDOWN CANCEL ───────────────────────────────────────────
+function cancelCountdown() {
+  try {
+    var ov = document.getElementById('cd-overlay');
+    if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
+    cdActive = false;
+    if (ov) ov.classList.remove('open');
+  } catch(e) {}
+}
+
+// ── NEW SESSION ────────────────────────────────────────────────
+function newSession() {
+  attempts = []; curAtt = 0; cfg = {};
+  cancelCountdown();
+  var iid = document.getElementById('iid');
+  var iage = document.getElementById('iage');
+  if (iid) iid.value = '';
+  if (iage) iage.value = '';
+  var igen = document.getElementById('igen');
+  if (igen) igen.value = '';
+  var flds = document.querySelectorAll('.field');
+  for (var i = 0; i < flds.length; i++) flds[i].classList.remove('invalid');
+  showScreen(1);
+}
+
+// ── MODAL ──────────────────────────────────────────────────────
+function openModal() { document.getElementById('info-modal-bg').classList.add('open'); }
+function closeModal() { document.getElementById('info-modal-bg').classList.remove('open'); }
+
+// ── WIRE UP ALL BUTTONS ────────────────────────────────────────
+function init() {
+  initSegs();
+  initToggles();
+  onBtn('btn-info', openModal);
+  onBtn('modal-close', closeModal);
+  var mbg = document.getElementById('info-modal-bg');
+  mbg.addEventListener('touchend', function(e) {
+    if (e.target === mbg) { e.preventDefault(); closeModal(); }
+  }, {passive: false});
+  mbg.addEventListener('click', function(e) {
+    if (e.target === mbg) closeModal();
+  });
+  onBtn('btn-begin', beginExp);
+  onBtn('btn-go-hist-1', function() { renderHist(); showScreen(4); });
+  onBtn('btn-start', doStart);
+
+  var stopBtn = document.getElementById('btn-stop');
+  stopBtn.addEventListener('touchstart', function(e) {
+    if (running) { e.preventDefault(); doStop(); }
+  }, {passive: false});
+  stopBtn.addEventListener('click', function() {
+    if (running) doStop();
+  });
+
+  onBtn('btn-csv', dlCSV);
+  onBtn('btn-go-hist-3', function() { renderHist(); showScreen(4); });
+  onBtn('btn-share', shareResult);
+  onBtn('btn-new', newSession);
+  onBtn('btn-csv-all', dlAll);
+  onBtn('btn-clear-hist', clearHist);
+  onBtn('btn-go-s1', newSession);
+
+  document.addEventListener('keydown', function(e) {
+    if ((e.code === 'Space' || e.code === 'Enter') &&
+        document.getElementById('s2').classList.contains('active')) {
+      e.preventDefault();
+      if (!running) doStart(); else doStop();
+    }
+  });
+}
+
+// ── WAKE LOCK ──────────────────────────────────────────────────
+var wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', function() { wakeLock = null; });
+    }
+  } catch(e) {}
+}
+function releaseWakeLock() {
+  try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch(e) {}
+}
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && running) requestWakeLock();
+});
+
+// ── ANDROID BACK BUTTON ───────────────────────────────────────
+window.addEventListener('popstate', function(e) {
+  var s2 = document.getElementById('s2');
+  var s3 = document.getElementById('s3');
+  var s4 = document.getElementById('s4');
+  if (s4 && s4.classList.contains('active')) { newSession(); }
+  else if (s3 && s3.classList.contains('active')) { newSession(); }
+  else if (s2 && s2.classList.contains('active')) {
+    if (running) { doStop(); }
+    else { newSession(); }
+  }
+});
+
+// ── INPUT SCROLL FIX ──────────────────────────────────────────
+var inputs = document.querySelectorAll('input, select');
+for (var ii = 0; ii < inputs.length; ii++) {
+  inputs[ii].addEventListener('focus', function(e) {
+    var el = e.target;
+    setTimeout(function() {
+      try { el.scrollIntoView({behavior: 'smooth', block: 'center'}); } catch(ex) {}
+    }, 300);
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
