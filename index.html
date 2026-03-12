@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эксперимент с восприятием времени</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        h1 { font-size: 2em; margin-bottom: 30px; }
+        a {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            text-decoration: none;
+            border-radius: 50px;
+            color: white;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+        a:hover { transform: scale(1.05); }
+        .apple { background: linear-gradient(45deg, #000, #007AFF); }
+        .android { background: linear-gradient(45deg, #3DDC84, #00C853); }
+        p { margin-top: 20px; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    <h1>🧠 Эксперимент с временем</h1>
+    <p>Выбери версию для твоего устройства:</p>
+    
+    <a href="apple_v1.0.html" class="apple">📱 iOS / Apple версия</a>
+    <a href="android_v1.0.html" class="android">🤖 Android версия</a>
+    
+    <p>Таймер для расчёта CE/AE и истории сессий. Работает оффлайн!</p>
+</body>
+</html>
