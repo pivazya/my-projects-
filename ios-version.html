@@ -13,7 +13,21 @@
 <meta name="msapplication-tap-highlight" content="no">
 <title>Внутренние часы</title>
 <style>
-::root {
+:root {
+  --ios-blue:#007aff;--ios-purple:#af52de;--ios-pink:#ff2d55;--ios-orange:#ff9500;
+  --ios-green:#34c759;--ios-yellow:#ffcc00;--ios-red:#ff3b30;--ios-teal:#5ac8fa;
+  --bg:#000000;--bg2:#1c1c1e;--bg3:#2c2c2e;--bg4:#3a3a3c;
+  --fill:rgba(120,120,128,.2);--fill2:rgba(120,120,128,.16);--fill3:rgba(118,118,128,.12);
+  --sep:rgba(60,60,67,.29);--sep-opaque:#38383a;
+  --label:#ffffff;--label2:rgba(235,235,245,.6);--label3:rgba(235,235,245,.3);--label4:rgba(235,235,245,.18);
+  --sf:-apple-system,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  --sf-display:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  --sf-mono:"SF Mono",ui-monospace,"Cascadia Code","Fira Code",monospace;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
+  --tab-h:calc(49px + var(--sab));--nav-h:calc(44px + var(--sat));
+}
+body{
   --ios-blue:#007aff;--ios-purple:#af52de;--ios-pink:#ff2d55;--ios-orange:#ff9500;
   --ios-green:#34c759;--ios-yellow:#ffcc00;--ios-red:#ff3b30;--ios-teal:#5ac8fa;
   --bg:#000000;--bg2:#1c1c1e;--bg3:#2c2c2e;--bg4:#3a3a3c;
