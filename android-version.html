@@ -90,10 +90,12 @@ canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
 /* ── FIELDS ── */
 .field{margin-bottom:10px}
 .field label{display:block;font-size:13px;color:var(--dim);margin-bottom:5px}
-.field input,.field select{width:100%;background:rgba(20,18,40,.6);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:16px;color:var(--txt);outline:none;-webkit-appearance:none;font-family:inherit}
+.field input,.field select{width:100%;background:rgba(20,18,40,.6);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:16px;color:var(--txt);outline:none;-webkit-appearance:none;font-family:inherit;color-scheme:dark}
+body[data-theme='light'] .field input,body[data-theme='light'] .field select{background:#f9fafb;color-scheme:light}
 .field input::placeholder{color:var(--dim2)}
 .field select{cursor:pointer}
-.field select option{background:#1e1c32}
+.field select option{background:#1e1c32;color:#eee8ff}
+body[data-theme='light'] .field select option{background:#ffffff;color:#0f172a}
 .field.invalid input,.field.invalid select{border-color:var(--a4)}
 .field-err{font-size:12px;color:var(--a4);margin-top:4px;min-height:16px}
 /* ── SEGMENTS ── */
@@ -664,8 +666,10 @@ var TIPS = [
 
 function setupExp() {
   document.getElementById('clock-time').textContent = cfg.target;
-  document.getElementById('att-cur').textContent = curAtt + 1;
-  document.getElementById('att-tot').textContent = cfg.total;
+  var attInfo = document.querySelector('.att-info');
+  if (attInfo) {
+    attInfo.innerHTML = 'Попытка <span id="att-cur">' + (curAtt + 1) + '</span> из <span id="att-tot">' + cfg.total + '</span>';
+  }
   document.getElementById('prog-fill').style.width = (curAtt / cfg.total * 100) + '%';
   document.getElementById('tip-box').innerHTML = TIPS[curAtt % TIPS.length];
   document.getElementById('clock-hint').textContent = 'Готовьтесь. Цель — ' + cfg.target + ' секунд.';
