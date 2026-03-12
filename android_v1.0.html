@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0f0e1a">
 <meta name="format-detection" content="telephone=no">
 <meta name="msapplication-tap-highlight" content="no">
-<title>Внутренние часы</title>
+<title>Эксперимент с временем</title>
 <style>
 :root {
   --bg: #0f0e1a;
@@ -26,6 +26,37 @@
   --sab: env(safe-area-inset-bottom, 0px);
   --sat: env(safe-area-inset-top, 0px);
 }
+body {
+  --bg: #0f0e1a;
+  --bg2: rgba(30,28,50,.72);
+  --glass: rgba(40,36,70,.88);
+  --glass2: rgba(50,46,80,.82);
+  --border: rgba(124,111,255,.18);
+  --a1: #7c6fff;
+  --a2: #b47aff;
+  --a3: #4ecdc4;
+  --a4: #ff6b6b;
+  --txt: #eee8ff;
+  --dim: rgba(200,195,230,.55);
+  --dim2: rgba(200,195,230,.4);
+  --radius: 18px;
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sat: env(safe-area-inset-top, 0px);
+}
+body[data-theme='light'] {
+  --bg: #f1f5f9;
+  --bg2: #e2e8f0;
+  --glass: #ffffff;
+  --glass2: #ffffff;
+  --border: #e2e8f0;
+  --a1: #4f46e5;
+  --a2: #6366f1;
+  --a3: #0f766e;
+  --a4: #dc2626;
+  --txt: #0f172a;
+  --dim: rgba(51,65,85,.9);
+  --dim2: rgba(100,116,139,.9);
+}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%;height:100dvh}
 body{
@@ -40,17 +71,21 @@ body{
 canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
 .app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:16px 16px calc(16px + var(--sab));padding-top:calc(16px + var(--sat))}
 /* ── HEADER ── */
-.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-actions{display:flex;align-items:center;gap:8px}
 .hdr-title{font-size:22px;font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hdr-btn{background:var(--glass);border:1px solid var(--border);color:var(--txt);border-radius:12px;padding:8px 14px;font-size:13px;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
 .hdr-btn:active{opacity:.7}
+.hdr-icon-btn{width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0}
+.hdr-back-icon{margin-right:6px}
 /* ── STEP DOTS ── */
 .steps{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
 .step-dot{width:10px;height:10px;border-radius:50%;background:var(--glass2);transition:all .3s}
 .step-dot.active{background:var(--a1);transform:scale(1.3);box-shadow:0 0 8px rgba(124,111,255,.5)}
 .step-dot.done{background:var(--a3)}
 /* ── CARDS ── */
-.card{background:var(--glass);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card{background:var(--glass);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
 .card-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:12px}
 /* ── FIELDS ── */
 .field{margin-bottom:10px}
@@ -94,7 +129,7 @@ canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
 .clock-svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .ring-bg{fill:none;stroke:rgba(60,55,90,.5);stroke-width:5}
 .ring-prog{fill:none;stroke:url(#grad);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .05s linear}
-.clock-face{position:absolute;inset:14px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:box-shadow .3s}
+.clock-face{position:absolute;inset:14px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:box-shadow .3s}
 .clock-time{font-size:48px;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1}
 .clock-hint{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
 .tip-box{background:rgba(124,111,255,.08);border:1px solid rgba(124,111,255,.12);border-radius:14px;padding:10px 14px;font-size:13px;color:var(--dim);line-height:1.5;text-align:center;margin-bottom:20px;max-width:340px}
@@ -161,6 +196,16 @@ canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
 .modal p{font-size:14px;line-height:1.7;color:var(--dim);margin-bottom:6px}
 .modal-close{float:right;background:var(--glass);border:1px solid var(--border);color:var(--txt);width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;touch-action:manipulation}
 .modal-close:active{opacity:.7}
+/* ── CONFIRM MODAL ── */
+#confirm-modal-bg{position:fixed;inset:0;background:rgba(15,14,26,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+#confirm-modal-bg.open{display:flex}
+.confirm-modal{background:var(--bg2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;max-width:360px;width:100%;padding:18px}
+.confirm-modal h3{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--txt)}
+.confirm-modal p{font-size:14px;line-height:1.6;color:var(--dim);margin-bottom:14px}
+.confirm-actions{display:flex;gap:8px;justify-content:flex-end}
+.confirm-btn{flex:1;min-width:0;padding:10px 14px;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--glass);color:var(--txt)}
+.confirm-btn.primary{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none}
+.confirm-btn:active{opacity:.8}
 /* ── TOAST ── */
 #toast{position:fixed;bottom:calc(24px + var(--sab));left:50%;transform:translateX(-50%) translateY(60px);background:rgba(50,46,80,.92);backdrop-filter:blur(10px);border-radius:100px;padding:10px 20px;font-size:13px;font-weight:500;color:#fff;pointer-events:none;opacity:0;white-space:nowrap;z-index:500;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -193,11 +238,30 @@ canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
   </div>
 </div>
 
+<div id="confirm-modal-bg" aria-hidden="true">
+  <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <h3 id="confirm-title">Очистить историю</h3>
+    <p>Все сессии будут удалены без возможности восстановления.</p>
+    <div class="confirm-actions">
+      <button type="button" class="confirm-btn" id="confirm-cancel">Отмена</button>
+      <button type="button" class="confirm-btn primary" id="confirm-ok">Очистить</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <!-- HEADER -->
   <div class="hdr">
-    <div class="hdr-title">⏱ Внутренние часы</div>
-    <button class="hdr-btn" id="btn-info">О тесте</button>
+    <div class="hdr-left">
+      <button class="hdr-btn" id="btn-back" type="button" onclick="location.href='index.html'" aria-label="Вернуться на главную">
+        <span class="hdr-back-icon">←</span><span>Назад</span>
+      </button>
+      <div class="hdr-title">Эксперимент с временем</div>
+    </div>
+    <div class="hdr-actions">
+      <button class="hdr-btn hdr-icon-btn" id="btn-theme" type="button" aria-label="Переключить тему">☀️</button>
+      <button class="hdr-btn" id="btn-info" type="button" aria-label="О эксперименте" title="О эксперименте">ℹ️</button>
+    </div>
   </div>
   <div class="steps">
     <div class="step-dot active" id="d1"></div>
@@ -211,65 +275,70 @@ canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
     <div class="card">
       <div class="card-label">Участник</div>
       <div class="field" id="fi">
-        <label>Имя или ID</label>
-        <input id="iid" type="text" placeholder="Введите имя" maxlength="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <label for="iid">Имя или псевдоним</label>
+        <input id="iid" type="text" placeholder="Например: Саша" maxlength="40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <div class="field-err"></div>
       </div>
       <div class="field" id="fa">
-        <label>Возраст</label>
+        <label for="iage">Возраст (лет)</label>
         <input id="iage" type="number" placeholder="8–99" min="8" max="99" inputmode="numeric">
         <div class="field-err"></div>
       </div>
       <div class="field" id="fg">
-        <label>Пол</label>
+        <label for="igen">Пол</label>
         <select id="igen">
           <option value="">— Выберите —</option>
           <option value="М">Мужской</option>
           <option value="Ж">Женский</option>
-          <option value="?">Не указывать</option>
+          <option value="?">Другое</option>
         </select>
         <div class="field-err"></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-label">Условие</div>
+      <div class="card-label">Условия</div>
       <div class="seg-ctrl" id="seg-c">
         <button class="seg-btn active" type="button" data-v="Без видео">🙅 Без видео</button>
         <button class="seg-btn" type="button" data-v="После видео">📱 После видео</button>
       </div>
-      <div style="font-size:12px;color:var(--dim2);line-height:1.5;margin-top:4px">«После видео» — если перед тестом смотрели ВК Клипы / YouTube Shorts.</div>
+      <div style="font-size:12px;color:var(--dim2);line-height:1.5;margin-top:4px">«После видео» — если прямо перед экспериментом вы смотрели короткие ролики (ВК Клипы, YouTube Shorts и др.).</div>
     </div>
 
     <div class="card">
-      <div class="card-label">Параметры теста</div>
+      <div class="card-label">Параметры эксперимента</div>
       <div style="font-size:12px;color:var(--dim);margin-bottom:6px">Целевое время (секунды)</div>
       <div class="seg-ctrl" id="seg-t">
         <button class="seg-btn" type="button" data-v="15">15 с</button>
         <button class="seg-btn active" type="button" data-v="30">30 с</button>
         <button class="seg-btn" type="button" data-v="60">60 с</button>
       </div>
-      <div style="font-size:12px;color:var(--dim);margin:8px 0 6px">Количество попыток</div>
+      <div style="font-size:12px;color:var(--dim2);margin-top:6px">Чем дольше цель — тем сложнее попасть точно.</div>
+      <div style="font-size:12px;color:var(--dim);margin:10px 0 6px">Количество попыток</div>
       <div class="seg-ctrl" id="seg-n">
         <button class="seg-btn" type="button" data-v="3">3</button>
         <button class="seg-btn active" type="button" data-v="5">5</button>
         <button class="seg-btn" type="button" data-v="7">7</button>
         <button class="seg-btn" type="button" data-v="10">10</button>
       </div>
-      <div style="height:8px"></div>
+      <div style="font-size:12px;color:var(--dim2);margin-top:6px">Больше попыток — надёжнее статистика.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Настройки</div>
       <div class="toggle-row">
         <span>🔊 Звуковые сигналы</span>
-        <button class="toggle-switch active" id="sound-tog" type="button"></button>
+        <button class="toggle-switch active" id="sound-tog" type="button" aria-label="Переключить звуковые сигналы"></button>
       </div>
       <div style="height:6px"></div>
       <div class="toggle-row">
         <span>⏳ Отсчёт 3–2–1</span>
-        <button class="toggle-switch active" id="cd-tog" type="button"></button>
+        <button class="toggle-switch active" id="cd-tog" type="button" aria-label="Переключить отсчёт 3–2–1"></button>
       </div>
     </div>
 
-    <button class="btn-primary" id="btn-begin" type="button">Начать эксперимент</button>
-    <button class="btn-ghost" id="btn-go-hist-1" type="button">📊 История</button>
+    <button class="btn-primary" id="btn-begin" type="button" aria-label="Начать новую сессию эксперимента" title="Начать новую сессию">Начать эксперимент</button>
+    <button class="btn-ghost" id="btn-go-hist-1" type="button" aria-label="Открыть историю всех сессий" title="История всех сессий">📊 История</button>
   </div>
 
   <!-- ══ SCREEN 2: EXPERIMENT ══ -->
@@ -304,6 +373,7 @@ canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
       <button class="tap-btn tap-stop" id="btn-stop" type="button">
         <div class="tap-icon">⬛</div>СТОП
       </button>
+      <button class="btn-primary" id="btn-next" type="button" style="display:none;margin-top:18px" aria-label="Перейти к следующей попытке" title="Следующая попытка">Следующая попытка</button>
     </div>
   </div>
 
@@ -337,18 +407,18 @@ canvas#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7}
       </table>
     </div>
 
-    <button class="btn-primary" id="btn-share" type="button">Поделиться результатом</button>
-    <button class="btn-ghost" id="btn-csv" type="button">💾 Скачать CSV</button>
-    <button class="btn-ghost" id="btn-go-hist-3" type="button">📊 История</button>
-    <button class="btn-ghost" id="btn-new" type="button">+ Новый участник</button>
+    <button class="btn-primary" id="btn-share" type="button" aria-label="Поделиться результатами эксперимента" title="Поделиться результатами">Поделиться результатом</button>
+    <button class="btn-ghost" id="btn-csv" type="button" aria-label="Сохранить результаты в CSV-файл" title="Скачать CSV">💾 Скачать CSV</button>
+    <button class="btn-ghost" id="btn-go-hist-3" type="button" aria-label="Открыть историю всех сессий" title="История всех сессий">📊 История</button>
+    <button class="btn-ghost" id="btn-new" type="button" aria-label="Начать новую сессию для другого участника" title="Новый участник">+ Новый участник</button>
   </div>
 
   <!-- ══ SCREEN 4: HISTORY ══ -->
   <div class="screen" id="s4">
     <div id="hist-content"></div>
-    <button class="btn-ghost" id="btn-csv-all" type="button">💾 Экспортировать всё в CSV</button>
-    <button class="btn-ghost red" id="btn-clear-hist" type="button">🗑 Очистить историю</button>
-    <button class="btn-ghost" id="btn-go-s1" type="button">← Назад</button>
+    <button class="btn-ghost" id="btn-csv-all" type="button" aria-label="Экспортировать всю историю в CSV-файл" title="Экспортировать всё в CSV">💾 Экспортировать всё в CSV</button>
+    <button class="btn-ghost red" id="btn-clear-hist" type="button" aria-label="Очистить всю историю экспериментов" title="Очистить историю">🗑 Очистить историю</button>
+    <button class="btn-ghost" id="btn-go-s1" type="button" aria-label="Вернуться к новой сессии" title="Новая сессия">← Новая сессия</button>
   </div>
 </div>
 
@@ -566,9 +636,9 @@ function beginExp() {
   var age = parseInt(document.getElementById('iage').value, 10);
   var gen = document.getElementById('igen').value;
   var ok = true;
-  if (!validate('fi', id.length > 0, 'Введите имя или ID')) ok = false;
-  if (!validate('fa', !isNaN(age) && age >= 8 && age <= 99, 'Возраст: 8–99')) ok = false;
-  if (!validate('fg', gen !== '', 'Выберите пол')) ok = false;
+  if (!validate('fi', id.length > 0, 'Укажите имя или псевдоним участника')) ok = false;
+  if (!validate('fa', !isNaN(age) && age >= 8 && age <= 99, 'Введите возраст от 8 до 99 лет')) ok = false;
+  if (!validate('fg', gen !== '', 'Пожалуйста, выберите пол')) ok = false;
   if (!ok) { haptic([20, 20, 20]); return; }
   cfg = {
     id: id, age: age, gen: gen,
@@ -583,12 +653,13 @@ function beginExp() {
 }
 
 var TIPS = [
-  '💡 <strong>Не считайте</strong> про себя — доверьтесь ощущениям.',
-  '💡 <strong>Расслабьтесь</strong> — напряжение ускоряет восприятие времени.',
-  '💡 Попробуйте <strong>закрыть глаза</strong> — многим помогает.',
-  '💡 <strong>Дышите ровно</strong> — ритм дыхания влияет на восприятие.',
-  '💡 Каждая попытка <strong>независима</strong> — не ориентируйтесь на предыдущую.',
-  '💡 Чем спокойнее мозг, тем <strong>точнее</strong> внутренние часы.',
+  '<strong>Совет:</strong> Дыши ровно — стресс ускоряет восприятие времени.',
+  '<strong>Совет:</strong> Не считай вслух и не стучи пальцем — только ощущение.',
+  '<strong>Совет:</strong> Постарайся расслабиться и просто «почувствовать» момент.',
+  '<strong>Совет:</strong> После короткого видео время может казаться короче.',
+  '<strong>Совет:</strong> Чем спокойнее обстановка — тем точнее внутренние часы.',
+  '<strong>Совет:</strong> Каждая попытка — новый шанс, не зацикливайся на предыдущей.',
+  '<strong>Совет:</strong> Резкие звуки и движения искажают восприятие — не отвлекайся.'
 ];
 
 function setupExp() {
@@ -597,10 +668,11 @@ function setupExp() {
   document.getElementById('att-tot').textContent = cfg.total;
   document.getElementById('prog-fill').style.width = (curAtt / cfg.total * 100) + '%';
   document.getElementById('tip-box').innerHTML = TIPS[curAtt % TIPS.length];
-  document.getElementById('clock-hint').textContent = 'цель';
+  document.getElementById('clock-hint').textContent = 'Готовьтесь. Цель — ' + cfg.target + ' секунд.';
   document.getElementById('clock-wrap').classList.remove('running');
   document.getElementById('btn-start').style.display = 'flex';
   document.getElementById('btn-stop').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
   document.getElementById('ring-prog').style.strokeDashoffset = ringCirc;
   running = false;
 }
@@ -649,7 +721,7 @@ function actuallyStart() {
   document.getElementById('btn-stop').style.display = 'flex';
   document.getElementById('clock-wrap').classList.add('running');
   document.getElementById('clock-time').textContent = '···';
-  document.getElementById('clock-hint').textContent = 'иди!';
+  document.getElementById('clock-hint').textContent = 'Нажмите СТОП, когда почувствуете, что прошло ' + cfg.target + ' секунд.';
 }
 
 function doStop() {
@@ -664,8 +736,13 @@ function doStop() {
   if (curAtt >= cfg.total) {
     setTimeout(finishExp, 320);
   } else {
-    toast('Попытка ' + curAtt + ' записана ✓');
-    setTimeout(setupExp, 420);
+    var attInfo = document.querySelector('.att-info');
+    if (attInfo) {
+      attInfo.textContent = 'Попытка ' + curAtt + ' завершена. Когда будете готовы — переходите к следующей.';
+    }
+    document.getElementById('clock-wrap').classList.remove('running');
+    document.getElementById('btn-stop').style.display = 'none';
+    document.getElementById('btn-next').style.display = 'block';
   }
 }
 
@@ -771,6 +848,7 @@ function finishExp() {
 
   saveHist(mean, ae, ce);
   showScreen(3);
+  toast('Сессия сохранена ✓');
 }
 
 function animCount(id, val, sfx) {
@@ -817,6 +895,7 @@ function renderHist() {
   var cont = document.getElementById('hist-content');
   if (!h.length) {
     cont.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span>Нет данных. Проведите первый эксперимент!</div>';
+    toast('История пуста');
     return;
   }
   var groups = {};
@@ -879,11 +958,20 @@ function renderHist() {
 }
 
 function clearHist() {
-  if (confirm('Очистить все данные? Это нельзя отменить.')) {
+  var bg = document.getElementById('confirm-modal-bg');
+  if (bg) bg.classList.add('open');
+}
+function closeConfirmModal() {
+  var bg = document.getElementById('confirm-modal-bg');
+  if (bg) bg.classList.remove('open');
+}
+function confirmClearHist() {
+  try {
     localStorage.removeItem('timeexp_v2');
-    renderHist();
-    toast('База очищена 🗑');
-  }
+  } catch(e) {}
+  closeConfirmModal();
+  renderHist();
+  toast('История очищена');
 }
 
 // ── CSV ────────────────────────────────────────────────────────
@@ -903,7 +991,7 @@ function dlCSV() {
 }
 function dlAll() {
   var h = getHist();
-  if (!h.length) { toast('Нет данных'); return; }
+  if (!h.length) { toast('История пуста'); return; }
   var csv = 'Дата,ID,Возраст,Пол,Условие,Цель(с),Попыток,Среднее(с),AE(с),CE(с),Попытки\n';
   for (var i = 0; i < h.length; i++) {
     var r = h[i];
@@ -920,8 +1008,8 @@ function saveCsvFile(content, name) {
     a.href = url; a.download = name;
     document.body.appendChild(a); a.click();
     setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
-    toast('Файл сохранён ✓');
-  } catch(e) { toast('Не удалось скачать'); }
+    toast('CSV сохранён ✓');
+  } catch(e) { toast('Что-то пошло не так…'); }
 }
 
 // ── SHARE ──────────────────────────────────────────────────────
@@ -935,8 +1023,8 @@ function shareResult() {
     navigator.share({title: 'Внутренние часы', text: txt}).catch(function(){});
   } else if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(txt)
-      .then(function() { toast('Скопировано в буфер 📋'); })
-      .catch(function() { toast('Скопируйте вручную'); });
+      .then(function() { toast('Скопировано в буфер ✓'); })
+      .catch(function() { toast('Что-то пошло не так…'); });
   } else {
     try {
       var ta = document.createElement('textarea');
@@ -946,8 +1034,8 @@ function shareResult() {
       var ok = false;
       try { ok = document.execCommand('copy'); } catch(e) {}
       document.body.removeChild(ta);
-      toast(ok ? 'Скопировано в буфер 📋' : 'Скопируйте вручную');
-    } catch(e) { toast('Скопируйте вручную'); }
+      toast(ok ? 'Скопировано в буфер ✓' : 'Что-то пошло не так…');
+    } catch(e) { toast('Что-то пошло не так…'); }
   }
 }
 
@@ -990,10 +1078,42 @@ function newSession() {
 function openModal() { document.getElementById('info-modal-bg').classList.add('open'); }
 function closeModal() { document.getElementById('info-modal-bg').classList.remove('open'); }
 
+// ── THEME ────────────────────────────────────────────────────────
+function updateThemeIcon() {
+  var btn = document.getElementById('btn-theme');
+  if (!btn) return;
+  var isLight = document.body.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '🌙' : '☀️';
+}
+function applyThemeFromStorage() {
+  try {
+    var saved = localStorage.getItem('timeexp-theme-android');
+    if (saved === 'light') {
+      document.body.setAttribute('data-theme', 'light');
+    } else {
+      document.body.removeAttribute('data-theme');
+    }
+  } catch(e) {}
+  updateThemeIcon();
+}
+function toggleTheme() {
+  var isLight = document.body.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    document.body.removeAttribute('data-theme');
+    try { localStorage.setItem('timeexp-theme-android', 'dark'); } catch(e) {}
+  } else {
+    document.body.setAttribute('data-theme', 'light');
+    try { localStorage.setItem('timeexp-theme-android', 'light'); } catch(e) {}
+  }
+  updateThemeIcon();
+}
+
 // ── WIRE UP ALL BUTTONS ────────────────────────────────────────
 function init() {
   initSegs();
   initToggles();
+  applyThemeFromStorage();
+  onBtn('btn-back', function() { window.location.href = 'index.html'; });
   onBtn('btn-info', openModal);
   onBtn('modal-close', closeModal);
   var mbg = document.getElementById('info-modal-bg');
@@ -1006,6 +1126,7 @@ function init() {
   onBtn('btn-begin', beginExp);
   onBtn('btn-go-hist-1', function() { renderHist(); showScreen(4); });
   onBtn('btn-start', doStart);
+  onBtn('btn-next', function() { setupExp(); });
 
   var stopBtn = document.getElementById('btn-stop');
   stopBtn.addEventListener('touchstart', function(e) {
@@ -1022,6 +1143,15 @@ function init() {
   onBtn('btn-csv-all', dlAll);
   onBtn('btn-clear-hist', clearHist);
   onBtn('btn-go-s1', newSession);
+  onBtn('btn-theme', toggleTheme);
+  var cbg = document.getElementById('confirm-modal-bg');
+  if (cbg) {
+    cbg.addEventListener('click', function(e) {
+      if (e.target === cbg) closeConfirmModal();
+    });
+  }
+  onBtn('confirm-cancel', closeConfirmModal);
+  onBtn('confirm-ok', confirmClearHist);
 
   document.addEventListener('keydown', function(e) {
     if ((e.code === 'Space' || e.code === 'Enter') &&
