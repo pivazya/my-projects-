@@ -412,11 +412,13 @@
       outline: none;
       transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
       min-height: 36px;
+      color-scheme: dark;
     }
 
     body.theme-light .field-input,
     body.theme-light .field-select {
       background: #f9fafb;
+      color-scheme: light;
     }
 
     .field-input:focus,
@@ -436,6 +438,16 @@
       background-size: 5px 5px, 5px 5px;
       background-repeat: no-repeat;
       padding-right: 32px;
+    }
+
+    .field-select option {
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    body.theme-light .field-select option {
+      background: #ffffff;
+      color: #0f172a;
     }
 
     .segment-control {
@@ -1759,7 +1771,6 @@
                     <span class="helper">В секундах</span>
                   </div>
                   <select class="field-select" id="selectTarget">
-                    <option value="10">10 секунд</option>
                     <option value="15">15 секунд</option>
                     <option value="30" selected>30 секунд</option>
                     <option value="60">60 секунд</option>
@@ -1951,7 +1962,7 @@
                 </div>
                 <div class="accuracy-bar-label">
                   <span id="accuracyLabel">—</span>
-                  <span>Чем больше полоса, тем ближе к 100 % точности.</span>
+                  <span>Чем больше полоса, тем ближе к 100 % точности.</span>
                 </div>
               </div>
               <div class="verdict-card" id="verdictCard">
@@ -2749,10 +2760,10 @@
 
     if (accuracy >= 90) {
       verdictClass = 'verdict-accuracy-high';
-      text = `Ваши оценки времени очень точны (≈${accRounded} % попаданий относительно цели). Похоже на хорошо сформированное внутреннее чувство длительности.`;
+      text = `Ваши оценки времени очень точны (≈${accRounded} % попаданий относительно цели). Похоже на хорошо сформированное внутреннее чувство длительности.`;
     } else if (accuracy >= 70) {
       verdictClass = 'verdict-accuracy-mid';
-      text = `Точность в районе ${accRounded} %: в целом вы удерживаете целевое время, но отдельные попытки заметно расходятся с целью. Это нормальный уровень для нетренированных участников.`;
+      text = `Точность в районе ${accRounded} %: в целом вы удерживаете целевое время, но отдельные попытки заметно расходятся с целью. Это нормальный уровень для нетренированных участников.`;
     } else if (ce > 1) {
       verdictClass = 'verdict-bias-positive';
       text = `В среднем вы <strong>завышали</strong> длительность (CE ≈ ${formatSeconds(ce)} с). Похоже, что субъективное ощущение времени растягивается по сравнению с физическим.`;
@@ -2761,7 +2772,7 @@
       text = `В среднем вы <strong>занижали</strong> длительность (CE ≈ ${formatSeconds(ce)} с). То есть по ощущениям время проходит быстрее, чем в реальности.`;
     } else {
       verdictClass = '';
-      text = `Точность умеренная (≈${accRounded} %) и без выраженного смещения по знаку. Это говорит о достаточно стабильном, но не идеальном ощущении целевого интервала.`;
+      text = `Точность умеренная (≈${accRounded} %) и без выраженного смещения по знаку. Это говорит о достаточно стабильном, но не идеальном ощущении целевого интервала.`;
     }
 
     return { verdictClass, text };
@@ -2778,7 +2789,7 @@
     animateMetric(metricCE, ce, 'с', 2, true);
     animateMetric(metricAE, ae, 'с', 2);
 
-    const accLabel = `${accuracy.toFixed(1)} %`;
+    const accLabel = `${accuracy.toFixed(1)} %`;
     accuracyBar.style.width = '0%';
     // принудительный reflow
     // eslint-disable-next-line no-unused-expressions
