@@ -54,6 +54,7 @@
       color: var(--text-main);
       display: flex;
       flex-direction: column;
+      line-height: 1.6;
     }
 
     .app-root {
@@ -103,7 +104,7 @@
       gap: 8px;
       font-size: 13px;
       cursor: pointer;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast);
+      transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast);
     }
 
     body.theme-light .btn-ghost {
@@ -116,13 +117,11 @@
 
     .btn-ghost:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 30px rgba(15,23,42,0.55);
       border-color: rgba(148, 163, 184, 0.6);
     }
 
     .btn-ghost:active {
       transform: scale(0.97);
-      box-shadow: none;
     }
 
     .header-title {
@@ -194,7 +193,7 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-muted);
-      transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+      transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
     }
 
     body.theme-light .theme-toggle {
@@ -204,7 +203,6 @@
     .theme-toggle:hover {
       border-color: var(--accent-soft);
       transform: translateY(-1px);
-      box-shadow: 0 10px 26px rgba(15,23,42,0.65);
       color: var(--text-main);
     }
 
@@ -250,7 +248,7 @@
       background: transparent;
       color: var(--text-muted);
       cursor: pointer;
-      transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
       white-space: nowrap;
     }
 
@@ -412,7 +410,7 @@
       background: radial-gradient(circle at top, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
       color: var(--text-main);
       outline: none;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+      transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
       min-height: 36px;
     }
 
@@ -424,7 +422,6 @@
     .field-input:focus,
     .field-select:focus {
       border-color: var(--accent-soft);
-      box-shadow: 0 0 0 1px rgba(124,58,237,0.7), 0 10px 26px rgba(15,23,42,0.7);
       transform: translateY(-1px);
     }
 
@@ -507,7 +504,7 @@
       height: 18px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 20%, #e5e7eb, #0f172a);
-      transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+      transition: transform var(--transition-fast), background var(--transition-fast);
       box-shadow: 0 4px 12px rgba(15,23,42,0.8);
     }
 
@@ -522,7 +519,6 @@
 
     .toggle-on .toggle-thumb {
       transform: translateX(18px);
-      box-shadow: 0 6px 14px rgba(124,58,237,0.9);
     }
 
     .error-text {
@@ -550,19 +546,17 @@
       gap: 8px;
       min-height: 44px;
       min-width: 220px;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast), opacity var(--transition-fast);
+      transition: transform var(--transition-fast), opacity var(--transition-fast);
       box-shadow: 0 14px 32px rgba(15,23,42,0.9);
     }
 
     .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.96);
       filter: brightness(1.05);
     }
 
     .btn-primary:active {
       transform: scale(0.97);
-      box-shadow: 0 6px 16px rgba(15,23,42,0.85);
     }
 
     .btn-secondary {
@@ -578,7 +572,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
+      transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
     }
 
     body.theme-light .btn-secondary {
@@ -587,13 +581,11 @@
 
     .btn-secondary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 30px rgba(15,23,42,0.8);
       border-color: rgba(148,163,184,0.7);
     }
 
     .btn-secondary:active {
       transform: scale(0.97);
-      box-shadow: 0 4px 14px rgba(15,23,42,0.8);
     }
 
     .btn-danger {
@@ -609,19 +601,17 @@
       justify-content: center;
       gap: 6px;
       min-height: 36px;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+      transition: transform var(--transition-fast), filter var(--transition-fast);
       box-shadow: 0 14px 34px rgba(153,27,27,0.85);
     }
 
     .btn-danger:hover {
       transform: translateY(-1px);
       filter: brightness(1.05);
-      box-shadow: 0 18px 42px rgba(153,27,27,0.95);
     }
 
     .btn-danger:active {
       transform: scale(0.97);
-      box-shadow: 0 6px 18px rgba(127,29,29,0.9);
     }
 
     .btn-ghost-small {
@@ -825,7 +815,6 @@
       height: 42px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 20%, #7c3aed, #1e293b);
-      box-shadow: 0 0 0 0 rgba(124,58,237,0.7);
       animation: pulse-neutral 1.8s ease-out infinite;
     }
 
@@ -850,15 +839,15 @@
     @keyframes pulse-neutral {
       0% {
         transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(124,58,237,0.65);
+        opacity: 0.9;
       }
       60% {
         transform: scale(1.12);
-        box-shadow: 0 0 0 16px rgba(124,58,237,0);
+        opacity: 1;
       }
       100% {
         transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(124,58,237,0);
+        opacity: 0.9;
       }
     }
 
@@ -1228,9 +1217,8 @@
       width: 10px;
       border-radius: 999px;
       background: var(--accent-alt);
-      transition: height 320ms cubic-bezier(.16,1,.3,1), transform 320ms cubic-bezier(.16,1,.3,1), box-shadow 320ms cubic-bezier(.16,1,.3,1);
+      transition: height 320ms cubic-bezier(.16,1,.3,1), transform 320ms cubic-bezier(.16,1,.3,1), opacity 200ms ease-out;
       transform-origin: bottom;
-      box-shadow: 0 0 0 rgba(6,182,212,0.7);
       opacity: 0;
       transform: scaleY(0.1) translateY(12px);
       animation: bar-in 260ms ease-out forwards;
@@ -1245,17 +1233,19 @@
 
     .chart-bar-over {
       background: #fb923c;
-      box-shadow: 0 0 16px rgba(251,146,60,0.9);
     }
 
     .chart-bar-under {
       background: #3b82f6;
-      box-shadow: 0 0 16px rgba(59,130,246,0.9);
     }
 
     .chart-bar-accurate {
       background: #22c55e;
-      box-shadow: 0 0 16px rgba(34,197,94,0.9);
+    }
+
+    .chart-bar.bar-active {
+      transform: scaleY(1.12) translateY(-4px);
+      opacity: 1;
     }
 
     .chart-target-line {
@@ -1365,6 +1355,22 @@
 
     .deviation-zero {
       color: #22c55e;
+    }
+
+    tbody tr:hover {
+      background: rgba(30,64,175,0.4);
+    }
+
+    body.theme-light tbody tr:hover {
+      background: #e0f2fe;
+    }
+
+    tbody tr.row-active {
+      background: rgba(56,189,248,0.25);
+    }
+
+    body.theme-light tbody tr.row-active {
+      background: #dbeafe;
     }
 
     .type-chip {
@@ -1577,6 +1583,72 @@
     .footer-note strong {
       color: var(--accent-soft);
     }
+
+    .status-label {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    body.theme-light .status-label {
+      background: #e5e7eb;
+    }
+
+    .status-label-ready {
+      border-color: rgba(59,130,246,0.9);
+      color: #bfdbfe;
+    }
+
+    .status-label-running {
+      border-color: rgba(167,139,250,0.9);
+      color: var(--accent-soft);
+    }
+
+    .status-label-between {
+      border-color: rgba(234,179,8,0.9);
+      color: #fde68a;
+    }
+
+    .status-label-done {
+      border-color: rgba(34,197,94,0.9);
+      color: #bbf7d0;
+    }
+
+    button:focus-visible,
+    .field-input:focus-visible,
+    .field-select:focus-visible,
+    .segment-option:focus-visible,
+    .tab:focus-visible,
+    .toggle:focus-visible {
+      outline: 2px solid var(--accent-soft);
+      outline-offset: 2px;
+    }
+
+    @media (min-width: 1100px) {
+      .app-root {
+        max-width: 1280px;
+      }
+    }
+
+    @media (max-width: 1099px) {
+      .app-root {
+        padding-inline: 16px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body class="theme-dark">
@@ -1607,6 +1679,7 @@
         <span class="theme-toggle-icon">☀️</span>
         <span class="theme-toggle-label">Светлая тема</span>
       </button>
+      <span class="status-label status-label-ready" id="status-label">Готово к старту</span>
       <div class="tabs" aria-label="Навигация по экранам">
         <button class="tab tab-active" data-view="settings" type="button">Настройки</button>
         <button class="tab" data-view="experiment" type="button">Эксперимент</button>
@@ -2112,6 +2185,7 @@
   const resultsMeta = document.getElementById('resultsMeta');
   const chartBody = document.getElementById('chartBody');
   const tableBodyTrials = document.getElementById('tableBodyTrials');
+  const statusLabelEl = document.getElementById('status-label');
 
   const btnShare = document.getElementById('btnShare');
   const btnCsvSession = document.getElementById('btnCsvSession');
@@ -2152,6 +2226,7 @@
     initKeyboardShortcuts();
     loadHistory();
     renderHistory();
+    updateStatusLabel('ready');
   }
 
   function initTheme() {
@@ -2346,6 +2421,7 @@
     requestWakeLock();
     prepareExperimentView();
     switchView('experiment');
+    updateStatusLabel('ready');
   }
 
   function validateSettings() {
@@ -2416,6 +2492,26 @@
 
     renderExperimentStatus();
     renderExperimentPhase();
+  }
+
+  function updateStatusLabel(state) {
+    if (!statusLabelEl) return;
+    statusLabelEl.classList.remove('status-label-ready', 'status-label-running', 'status-label-between', 'status-label-done');
+    let text = 'Готово к старту';
+    if (state === 'running' && appState.experiment) {
+      const exp = appState.experiment;
+      text = `Идёт попытка ${Math.min(exp.currentTrial + 1, exp.trialsTotal)} / ${exp.trialsTotal}`;
+      statusLabelEl.classList.add('status-label-running');
+    } else if (state === 'between' && appState.experiment) {
+      text = 'Между попытками';
+      statusLabelEl.classList.add('status-label-between');
+    } else if (state === 'done') {
+      text = 'Эксперимент завершён';
+      statusLabelEl.classList.add('status-label-done');
+    } else {
+      statusLabelEl.classList.add('status-label-ready');
+    }
+    statusLabelEl.textContent = text;
   }
 
   function renderExperimentStatus() {
@@ -2564,6 +2660,7 @@
     exp.trialStartPerf = performance.now();
     renderExperimentStatus();
     renderExperimentPhase();
+    updateStatusLabel('running');
     playSound('start');
     triggerHaptic([25, 40, 25]);
   }
@@ -2584,6 +2681,11 @@
     exp.phase = 'between';
     renderExperimentStatus();
     renderExperimentPhase();
+    if (exp.currentTrial >= exp.trialsTotal) {
+      updateStatusLabel('done');
+    } else {
+      updateStatusLabel('between');
+    }
     playSound('stop');
     triggerHaptic([15, 30, 15]);
 
@@ -2600,6 +2702,7 @@
     exp.phase = 'before';
     renderExperimentStatus();
     renderExperimentPhase();
+    updateStatusLabel('ready');
   }
 
   function finishExperiment() {
@@ -2699,6 +2802,7 @@
 
     renderChart(exp.rawTimes, target);
     renderTrialsTable(exp.rawTimes, target);
+    bindChartTableInteractions();
   }
 
   function animateMetric(el, value, suffix, decimals, allowSign) {
@@ -2768,6 +2872,7 @@
       }
       bar.style.height = `${px}px`;
       bar.style.animationDelay = `${i * baseDelay}s`;
+      bar.dataset.idx = String(i);
       wrap.appendChild(bar);
       chartBody.appendChild(wrap);
     }
@@ -2783,6 +2888,7 @@
       const dev = t - target;
       const tr = document.createElement('tr');
       tr.style.animationDelay = `${i * 0.03}s`;
+      tr.dataset.idx = String(i);
 
       const tdIdx = document.createElement('td');
       tdIdx.textContent = String(i + 1);
@@ -2825,6 +2931,52 @@
 
       tableBodyTrials.appendChild(tr);
     }
+  }
+
+  function bindChartTableInteractions() {
+    const bars = Array.from(chartBody.querySelectorAll('.chart-bar'));
+    const rows = Array.from(tableBodyTrials.querySelectorAll('tr'));
+    if (!bars.length || !rows.length) return;
+
+    const rowsByIdx = new Map();
+    rows.forEach(row => {
+      const idx = row.dataset.idx;
+      if (idx != null) rowsByIdx.set(idx, row);
+    });
+
+    const barsByIdx = new Map();
+    bars.forEach(bar => {
+      const idx = bar.dataset.idx;
+      if (idx != null) barsByIdx.set(idx, bar);
+    });
+
+    bars.forEach(bar => {
+      const idx = bar.dataset.idx;
+      if (idx == null) return;
+      const row = rowsByIdx.get(idx);
+      bar.addEventListener('mouseenter', () => {
+        bar.classList.add('bar-active');
+        if (row) row.classList.add('row-active');
+      });
+      bar.addEventListener('mouseleave', () => {
+        bar.classList.remove('bar-active');
+        if (row) row.classList.remove('row-active');
+      });
+    });
+
+    rows.forEach(row => {
+      const idx = row.dataset.idx;
+      if (idx == null) return;
+      const bar = barsByIdx.get(idx);
+      row.addEventListener('mouseenter', () => {
+        row.classList.add('row-active');
+        if (bar) bar.classList.add('bar-active');
+      });
+      row.addEventListener('mouseleave', () => {
+        row.classList.remove('row-active');
+        if (bar) bar.classList.remove('bar-active');
+      });
+    });
   }
 
   function saveHistory(exp, stats) {
@@ -3210,6 +3362,7 @@
     stopMetricAnimation();
     releaseWakeLock();
     switchView('settings');
+    updateStatusLabel('ready');
   }
 
   function showToast(message) {
