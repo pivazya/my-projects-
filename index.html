@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Эксперимент с восприятием времени</title>
+    <title>Эксперимент с временем</title>
+    <meta name="description" content="Офлайн-эксперимент по восприятию времени. Проверь точность своих внутренних часов без интернета.">
+    <meta property="og:title" content="Эксперимент с временем">
+    <meta property="og:description" content="Офлайн-эксперимент по восприятию времени у подростков. Работает прямо в браузере.">
+    <meta property="og:type" content="website">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <style>
         /* 
          * Базовые CSS‑переменные для светлой/тёмной темы.
@@ -123,6 +130,7 @@
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
             overflow: hidden;
+            overflow-x: hidden;
             position: relative;
         }
 
@@ -755,6 +763,10 @@
             color: var(--text-color);
         }
 
+        @media (max-width: 400px) {
+            .app-root { padding: 12px 12px 24px; }
+        }
+
         /* Дополнительная микротипография для очень маленьких экранов */
         @media (max-width: 360px) {
             .card {
@@ -778,6 +790,11 @@
                 top: 4px;
                 left: 12px;
             }
+        }
+
+        @media (max-width: 600px) {
+            .theme-toggle-label { display: none; }
+            .theme-toggle { padding: 6px 8px; }
         }
 
         /* Для более широких экранов немного "собираем" карточку */
@@ -815,8 +832,7 @@
 
             <!-- Подзаголовок: текст будет «напечатан» по буквам JS‑ом -->
             <p class="subtitle" id="subtitle">
-                Короткий офлайн‑эксперимент по восприятию времени: выберите версию интерфейса
-                под ваше устройство и следуйте инструкциям.
+                Короткий офлайн-эксперимент по восприятию времени у подростков
             </p>
 
             <div class="device-section" aria-label="Выбор версии эксперимента">
@@ -824,7 +840,7 @@
 
                 <div class="buttons">
                     <!-- Ссылки на версии эксперимента: iOS -->
-                    <a href="apple_v1.0.html" class="device-link apple" id="link-apple">
+                    <a href="ios-version.html" class="device-link apple" id="link-apple" aria-label="Открыть эксперимент для iOS и Apple">
                         <span class="device-link-content">
                             <span class="device-link-icon" aria-hidden="true">📱</span>
                             <span>
@@ -836,7 +852,7 @@
                     </a>
 
                     <!-- Android‑версия -->
-                    <a href="android_v1.0.html" class="device-link android" id="link-android">
+                    <a href="android-version.html" class="device-link android" id="link-android" aria-label="Открыть эксперимент для Android">
                         <span class="device-link-content">
                             <span class="device-link-icon" aria-hidden="true">🤖</span>
                             <span>
@@ -848,7 +864,7 @@
                     </a>
 
                     <!-- Новая кнопка для десктопной версии -->
-                    <a href="desktop_v1.0.html" class="device-link desktop" id="link-desktop">
+                    <a href="desktop-version.html" class="device-link desktop" id="link-desktop" aria-label="Открыть эксперимент для компьютера">
                         <span class="device-link-content">
                             <span class="device-link-icon" aria-hidden="true">🖥️</span>
                             <span>
